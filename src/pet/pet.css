@@ -6,7 +6,7 @@
 html, body {
   width: 100%; height: 100%;
   background: transparent;        /* 关键: 透明窗口 */
-  overflow: hidden;
+  overflow: visible;
   font-family: -apple-system, "PingFang SC", system-ui, sans-serif;
   user-select: none;
   -webkit-user-select: none;
@@ -20,18 +20,18 @@ html, body {
 }
 
 /* 音符层 */
-.pet-notes { position: absolute; inset: 0; pointer-events: none; }
+.pet-notes { position: absolute; inset: 0; pointer-events: none; overflow: visible; }
 .pet-note {
-  position: absolute; bottom: 70px;
-  font-size: 22px;
+  position: absolute; bottom: 96px;
+  font-size: 24px; font-weight: bold;
   color: hsl(var(--hue,45) 85% 68%);
-  text-shadow: 0 0 10px hsla(var(--hue,45) 85% 68% / 0.7);
-  animation: petFloat 1.2s ease-out forwards;
+  text-shadow: 0 0 10px hsla(var(--hue,45) 85% 68% / 0.8);
+  animation: petFloat 1.3s ease-out forwards;
 }
 @keyframes petFloat {
   0%   { transform: translate(0,0) scale(0.4); opacity: 0; }
-  20%  { opacity: 1; transform: translate(0,-8px) scale(1.1); }
-  100% { transform: translate(var(--drift,0), -120px) scale(0.8); opacity: 0; }
+  25%  { opacity: 1; transform: translate(0,-14px) scale(1.15); }
+  100% { transform: translate(var(--drift,0), -80px) scale(0.85); opacity: 0; }
 }
 
 /* 桌宠本体 */

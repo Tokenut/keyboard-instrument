@@ -90,7 +90,7 @@ function createPetWindow() {
     skipTaskbar: true,
     alwaysOnTop: true,
     hasShadow: false,
-    focusable: false, // 不抢焦点, 用户可继续在别处打字
+    // focusable 保持 true, 否则 macOS 下桌宠收不到鼠标点击(会点不动回不去)
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
@@ -149,14 +149,15 @@ function startGlobalKeyboardHook() {
 // --------------------------------------------------------------------------
 function enterPetMode() {
   petMode = true;
-  if (petWindow) petWindow.show();
+  if (petWindow) {
+    petWindow.show();
+    petWindow.setAlwaysOnTop(true, 'screen-saver');
+  }
   if (mainWindow) {
     if (mainWindow.isMinimized()) mainWindow.restore(); // 撤销最小化动作
-    // 不用 hide(): macOS 会挂起隐藏窗口音频。改为移到屏幕外+设透明,
-    // 让窗口对系统保持"存活", 音频进程不被挂起, 打字持续发声。
+    // 不用 hide()/opacity=0: 都会让 Chromium 判定窗口不可见 -> 挂起 AudioContext -> 没声。
+    // 改为仅移到屏幕外(窗口对系统仍"可见且在渲染"), 用户看不到但音频持续。
     savedBounds = mainWindow.getBounds();
-    mainWindow.setOpacity(0);
-    mainWindow.setIgnoreMouseEvents(true);
     mainWindow.setBounds({ x: -32000, y: -32000, width: savedBounds.width, height: savedBounds.height });
     mainWindow.setSkipTaskbar(true);
   }
@@ -167,8 +168,6 @@ function exitPetMode() {
   if (petWindow) petWindow.hide();
   if (mainWindow) {
     if (savedBounds) mainWindow.setBounds(savedBounds);
-    mainWindow.setOpacity(1);
-    mainWindow.setIgnoreMouseEvents(false);
     mainWindow.setSkipTaskbar(false);
     mainWindow.show();
     mainWindow.focus();

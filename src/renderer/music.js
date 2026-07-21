@@ -48,6 +48,7 @@
       id: 'piano',
       name: '钢琴',
       emoji: '🎹',
+      art: '../../assets/instruments/piano.svg',
       // 真实钢琴采样 (Salamander)
       sampler: {
         baseUrl: '../../assets/samples/piano/',

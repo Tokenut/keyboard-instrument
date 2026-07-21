@@ -21,6 +21,8 @@
 
   // 已记录的音符队列, 每项 { note: 'C4', key: 'c/4' }
   let noteQueue = [];
+  // 最后一个音符的真实绘制坐标(来自 VexFlow), 用于精确定位羽毛笔
+  let lastNotePos = null;
 
   // 把科学音高 'C#4' 转成 VexFlow 的 'c#/4'
   function toVexKey(sci) {
@@ -48,8 +50,8 @@
       noteQueue = noteQueue.slice(noteQueue.length - 40);
     }
     redraw();
-    positionQuillAtLast();
-    autoScroll();
+    autoScroll();          // 先滚到末尾
+    positionQuillAtLast(); // 再按最终 scrollLeft 定位羽毛笔
   }
 
   function clear() {
@@ -72,6 +74,9 @@
     context.clear();
     context.setFont('Arial', 10);
 
+    lastNotePos = null;
+    const lastRealIdx = noteQueue.length - 1; // 最后一个真实音符的全局索引
+
     let x = LEFT_PAD;
     for (let mi = 0; mi < measures; mi++) {
       const stave = new VF.Stave(x, 12, STAVE_W);
@@ -81,7 +86,8 @@
       stave.setContext(context).draw();
 
       // 该小节的音符
-      const slice = noteQueue.slice(mi * NOTES_PER_MEASURE, mi * NOTES_PER_MEASURE + NOTES_PER_MEASURE);
+      const sliceStart = mi * NOTES_PER_MEASURE;
+      const slice = noteQueue.slice(sliceStart, sliceStart + NOTES_PER_MEASURE);
       const vexNotes = slice.map((n) => {
         const keyLetter = n.key.split('/')[0];
         const staveNote = new VF.StaveNote({
@@ -97,6 +103,7 @@
         return staveNote;
       });
 
+      const realCount = vexNotes.length; // 本小节真实音符数
       // 用休止符补齐本小节, 保证节拍完整
       while (vexNotes.length < NOTES_PER_MEASURE) {
         vexNotes.push(new VF.StaveNote({ keys: ['b/4'], duration: 'qr' }));
@@ -104,6 +111,17 @@
 
       try {
         VF.Formatter.FormatAndDraw(context, stave, vexNotes, { auto_beam: false });
+        // 若最后一个真实音符落在本小节, 读取它的真实绘制坐标
+        if (lastRealIdx >= sliceStart && lastRealIdx < sliceStart + realCount) {
+          const idxInMeasure = lastRealIdx - sliceStart;
+          const noteObj = vexNotes[idxInMeasure];
+          try {
+            const nx = noteObj.getAbsoluteX();
+            const ys = noteObj.getYs ? noteObj.getYs() : null;
+            const ny = (ys && ys.length) ? ys[0] : 40;
+            lastNotePos = { x: nx, y: ny };
+          } catch (_) { /* noop */ }
+        }
       } catch (err) {
         // 某些边界情况格式化失败, 跳过该小节
       }
@@ -111,28 +129,34 @@
     }
   }
 
-  // 把羽毛笔移到最后一个音符位置
+  // 把羽毛笔笔尖移到最后一个音符的真实绘制位置
   function positionQuillAtLast() {
-    if (!quillEl || noteQueue.length === 0) return;
-    const total = noteQueue.length;
-    const mi = Math.floor((total - 1) / NOTES_PER_MEASURE);
-    const idxInMeasure = (total - 1) % NOTES_PER_MEASURE;
-    // 估算 x: 小节起点 + 谱号偏移 + 音符间距
-    const clefOffset = mi === 0 ? 60 : 12;
-    const noteSpacing = (STAVE_W - clefOffset - 20) / NOTES_PER_MEASURE;
-    const x = LEFT_PAD + mi * STAVE_W + clefOffset + idxInMeasure * noteSpacing;
-    const y = 34;
+    if (!quillEl || !lastNotePos || !container || !scrollEl) return;
+
+    // lastNotePos 是相对 #score 内 SVG 的坐标。
+    // quill 相对 .score-scroll 定位, 需换算:
+    //   score 相对 scroll 的偏移(含 padding) - scroll 已滚动距离 + 音符坐标
+    const scoreOffsetLeft = container.offsetLeft; // score 在 scroll 内的左偏移(含 padding)
+    const scoreOffsetTop = container.offsetTop;
+    // 笔尖在 SVG 左下角(约 x=8,y=58), 让笔尖对准音符
+    const TIP_X = 8, TIP_Y = 56;
+
+    const x = scoreOffsetLeft + lastNotePos.x - TIP_X - scrollEl.scrollLeft;
+    const y = scoreOffsetTop + lastNotePos.y - TIP_Y;
+
     quillEl.style.opacity = '1';
     quillEl.style.transform = `translate(${x}px, ${y}px)`;
     // 落笔小动画
     quillEl.classList.remove('quill-dip');
-    void quillEl.offsetWidth; // 触发 reflow 重启动画
+    void quillEl.offsetWidth;
     quillEl.classList.add('quill-dip');
   }
 
   function autoScroll() {
     if (!scrollEl) return;
     scrollEl.scrollLeft = scrollEl.scrollWidth;
+    // 滚动后重新定位羽毛笔(因为 scrollLeft 变了)
+    positionQuillAtLast();
   }
 
   global.KBI_SCORE = { init, addNote, clear };

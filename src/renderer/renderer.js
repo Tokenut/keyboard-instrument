@@ -65,7 +65,12 @@
   function selectInstrument(id) {
     selectedInstrument = id;
     const inst = M.INSTRUMENTS[id];
-    instrumentArt.textContent = inst.emoji;
+    // 有 SVG 立绘则用 <img>, 否则回退到 emoji
+    if (inst.art) {
+      instrumentArt.innerHTML = `<img class="instrument-img" src="${inst.art}" alt="${inst.name}" />`;
+    } else {
+      instrumentArt.textContent = inst.emoji;
+    }
     instrumentName.textContent = inst.name;
     refreshInstrumentBar();
     if (audioReady) ENGINE.setInstrument(id);
@@ -371,6 +376,7 @@
     buildInstrumentBar();
     bindEvents();
     refreshHookStatus();
+    selectInstrument(selectedInstrument); // 初始化乐器立绘(默认钢琴 SVG)
   }
 
   if (document.readyState === 'loading') {

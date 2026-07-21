@@ -1,0 +1,96 @@
+<svg viewBox="0 0 480 360" xmlns="http://www.w3.org/2000/svg" class="piano-svg" preserveAspectRatio="xMidYMid meet">
+  <!-- 3/4 侧视角 三角钢琴 (grand piano) -->
+  <defs>
+    <linearGradient id="bodyGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#3a2f4d"/>
+      <stop offset="45%" stop-color="#1e1830"/>
+      <stop offset="100%" stop-color="#120d1f"/>
+    </linearGradient>
+    <linearGradient id="lidGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#4a3d63"/>
+      <stop offset="60%" stop-color="#281f3d"/>
+      <stop offset="100%" stop-color="#191227"/>
+    </linearGradient>
+    <linearGradient id="lidInner" x1="0" y1="0" x2="1" y2="0.6">
+      <stop offset="0%" stop-color="#e8b84b" stop-opacity="0.25"/>
+      <stop offset="50%" stop-color="#c77dff" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#2a2140" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="keyWhite" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fffdf5"/>
+      <stop offset="100%" stop-color="#e3dcc8"/>
+    </linearGradient>
+    <radialGradient id="shine" cx="0.3" cy="0.2" r="0.9">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.35"/>
+      <stop offset="40%" stop-color="#ffffff" stop-opacity="0.05"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- 地面投影 -->
+  <ellipse cx="240" cy="330" rx="200" ry="22" fill="#000000" opacity="0.35"/>
+
+  <!-- 钢琴主体(弯曲的琴身, 从右前延伸到左后) -->
+  <path d="M 120 200
+           C 90 150, 150 110, 250 108
+           C 360 106, 430 140, 445 200
+           L 445 235
+           C 430 250, 360 240, 300 240
+           L 150 240
+           C 128 240, 118 222, 120 200 Z"
+        fill="url(#bodyGrad)" stroke="#0c0817" stroke-width="2"/>
+
+  <!-- 掀开的琴盖 -->
+  <path d="M 250 108
+           C 360 106, 430 140, 445 200
+           L 415 175
+           C 400 130, 340 70, 250 66
+           C 180 64, 140 88, 130 120
+           C 160 108, 200 108, 250 108 Z"
+        fill="url(#lidGrad)" stroke="#0c0817" stroke-width="2"/>
+  <!-- 琴盖内侧反光 -->
+  <path d="M 250 108
+           C 200 108, 160 108, 130 120
+           C 140 88, 180 64, 250 66
+           C 340 70, 400 130, 415 175
+           L 250 108 Z"
+        fill="url(#lidInner)"/>
+
+  <!-- 支撑琴盖的撑杆 -->
+  <line x1="200" y1="110" x2="185" y2="72" stroke="#e8b84b" stroke-width="4" stroke-linecap="round" opacity="0.85"/>
+
+  <!-- 键盘区(前部) -->
+  <path d="M 128 232 L 300 232 L 312 258 L 122 258 Z"
+        fill="#1a1428" stroke="#0c0817" stroke-width="2"/>
+  <!-- 白键 -->
+  <g>
+    <rect x="132" y="235" width="176" height="20" rx="2" fill="url(#keyWhite)"/>
+    <!-- 白键分隔线 -->
+    <g stroke="#c9c0a6" stroke-width="1">
+      <line x1="154" y1="236" x2="152" y2="254"/>
+      <line x1="176" y1="236" x2="174" y2="254"/>
+      <line x1="198" y1="236" x2="196" y2="254"/>
+      <line x1="220" y1="236" x2="218" y2="254"/>
+      <line x1="242" y1="236" x2="240" y2="254"/>
+      <line x1="264" y1="236" x2="262" y2="254"/>
+      <line x1="286" y1="236" x2="284" y2="254"/>
+    </g>
+    <!-- 黑键 -->
+    <g fill="#15101f">
+      <rect x="148" y="235" width="9" height="13" rx="1.5"/>
+      <rect x="170" y="235" width="9" height="13" rx="1.5"/>
+      <rect x="204" y="235" width="9" height="13" rx="1.5"/>
+      <rect x="226" y="235" width="9" height="13" rx="1.5"/>
+      <rect x="248" y="235" width="9" height="13" rx="1.5"/>
+      <rect x="282" y="235" width="9" height="13" rx="1.5"/>
+    </g>
+  </g>
+
+  <!-- 三条琴腿 -->
+  <path d="M 150 258 L 146 315 L 158 315 L 160 258 Z" fill="#1a1330" stroke="#0c0817" stroke-width="1.5"/>
+  <path d="M 290 258 L 292 315 L 304 315 L 300 258 Z" fill="#1a1330" stroke="#0c0817" stroke-width="1.5"/>
+  <path d="M 415 235 L 424 312 L 436 312 L 432 232 Z" fill="#1a1330" stroke="#0c0817" stroke-width="1.5"/>
+
+  <!-- 琴身高光 -->
+  <ellipse cx="230" cy="150" rx="120" ry="35" fill="url(#shine)"/>
+</svg>
