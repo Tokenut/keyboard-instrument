@@ -166,15 +166,9 @@
   // ------------------------------------------------------------------
   async function startAudio() {
     await ENGINE.ensureStarted();
-    // 采样加载状态 -> 更新 UI 提示
+    // 采样加载状态 -> 只切 class(用 CSS 显示"加载中"), 不改文本, 避免覆盖乐器名
     ENGINE.onLoadingChange((loading) => {
       instrumentName.classList.toggle('loading', loading);
-      if (loading) {
-        instrumentName.dataset.orig = instrumentName.textContent;
-        instrumentName.textContent = '加载音色中…';
-      } else if (instrumentName.dataset.orig) {
-        instrumentName.textContent = instrumentName.dataset.orig;
-      }
     });
     ENGINE.setInstrument(selectedInstrument);
     audioReady = true;

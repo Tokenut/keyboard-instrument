@@ -8,11 +8,11 @@
   // VexFlow UMD 在浏览器挂到 window.Vex
   const VF = global.Vex && global.Vex.Flow ? global.Vex.Flow : (global.Vex || {});
 
-  const STAVE_W = 220;      // 每个小节宽度
+  const STAVE_W = 200;      // 每个小节的目标最小宽度(实际会自适应铺满)
   const NOTES_PER_MEASURE = 4; // 每小节音符数(4/4 拍, 四分音符)
   const STAVE_H = 150;
-  const LEFT_PAD = 10;
-  const MAX_NOTES = 32;     // 谱面最多保留的音符数(超过则滚动跟随)
+  const LEFT_PAD = 8;
+  const MAX_NOTES = 48;     // 谱面最多保留的音符数(超过则滚动跟随)
 
   let container = null;   // #score
   let scrollEl = null;    // #scoreScroll
@@ -66,36 +66,55 @@
     return Math.max(1, Math.ceil(noteQueue.length / NOTES_PER_MEASURE));
   }
 
+  // 每行可容纳的小节数(根据 viewport 可用宽度)
+  function measuresPerLine() {
+    const avail = (scrollEl ? scrollEl.clientWidth : 440) - LEFT_PAD * 2;
+    return Math.max(1, Math.floor(avail / STAVE_W));
+  }
+
+  const LINE_H = 116;       // 每行五线谱垂直间距
+  const TOP_PAD = 10;
+
   function redraw() {
     if (!renderer) return;
     const measures = measureCount();
-    const totalW = LEFT_PAD + measures * STAVE_W + 20;
-    renderer.resize(totalW, STAVE_H);
+    const perLine = measuresPerLine();
+    const lines = Math.ceil(measures / perLine);
+
+    // 可用宽度: viewport 客户区减去左右留白
+    const avail = (scrollEl ? scrollEl.clientWidth : 440) - LEFT_PAD * 2;
+    // 小节宽度自适应, 铺满每行
+    const staveW = Math.floor(avail / perLine);
+    const lineW = LEFT_PAD * 2 + perLine * staveW;
+    const totalH = TOP_PAD + lines * LINE_H + 20;
+    renderer.resize(lineW, totalH);
     context = renderer.getContext();
     context.clear();
     context.setFont('Arial', 10);
 
     lastNotePos = null;
-    const lastRealIdx = noteQueue.length - 1; // 最后一个真实音符的全局索引
+    const lastRealIdx = noteQueue.length - 1;
 
-    let x = LEFT_PAD;
     for (let mi = 0; mi < measures; mi++) {
-      const stave = new VF.Stave(x, 12, STAVE_W);
-      if (mi === 0) {
-        stave.addClef('treble').addTimeSignature('4/4');
+      const lineIdx = Math.floor(mi / perLine);
+      const colIdx = mi % perLine;
+      const x = LEFT_PAD + colIdx * staveW;
+      const y = TOP_PAD + lineIdx * LINE_H;
+      const isLineStart = colIdx === 0;
+
+      const stave = new VF.Stave(x, y, staveW);
+      // 每行开头都画谱号(像真乐谱), 第一行还画拍号
+      if (isLineStart) {
+        stave.addClef('treble');
+        if (lineIdx === 0) stave.addTimeSignature('4/4');
       }
       stave.setContext(context).draw();
 
-      // 该小节的音符
       const sliceStart = mi * NOTES_PER_MEASURE;
       const slice = noteQueue.slice(sliceStart, sliceStart + NOTES_PER_MEASURE);
       const vexNotes = slice.map((n) => {
         const keyLetter = n.key.split('/')[0];
-        const staveNote = new VF.StaveNote({
-          keys: [n.key],
-          duration: 'q',
-        });
-        // 处理升号
+        const staveNote = new VF.StaveNote({ keys: [n.key], duration: 'q' });
         if (keyLetter.includes('#')) {
           staveNote.addModifier(new VF.Accidental('#'), 0);
         } else if (keyLetter.includes('b')) {
@@ -104,29 +123,26 @@
         return staveNote;
       });
 
-      const realCount = vexNotes.length; // 本小节真实音符数
-      // 用休止符补齐本小节, 保证节拍完整
+      const realCount = vexNotes.length;
       while (vexNotes.length < NOTES_PER_MEASURE) {
         vexNotes.push(new VF.StaveNote({ keys: ['b/4'], duration: 'qr' }));
       }
 
       try {
         VF.Formatter.FormatAndDraw(context, stave, vexNotes, { auto_beam: false });
-        // 若最后一个真实音符落在本小节, 读取它的真实绘制坐标
         if (lastRealIdx >= sliceStart && lastRealIdx < sliceStart + realCount) {
           const idxInMeasure = lastRealIdx - sliceStart;
           const noteObj = vexNotes[idxInMeasure];
           try {
             const nx = noteObj.getAbsoluteX();
             const ys = noteObj.getYs ? noteObj.getYs() : null;
-            const ny = (ys && ys.length) ? ys[0] : 40;
+            const ny = (ys && ys.length) ? ys[0] : (y + 40);
             lastNotePos = { x: nx, y: ny };
           } catch (_) { /* noop */ }
         }
       } catch (err) {
         // 某些边界情况格式化失败, 跳过该小节
       }
-      x += STAVE_W;
     }
   }
 
@@ -144,8 +160,9 @@
     // 笔尖锚点(SVG 内笔尖位置)
     const TIP_X = 8, TIP_Y = 52;
 
-    const x = vpLeft + scoreLeft + lastNotePos.x - scrollEl.scrollLeft - TIP_X;
-    const y = vpTop + scoreTop + lastNotePos.y - TIP_Y;
+    // 多行纵向滚动: x 固定, y 减去已滚动距离
+    const x = vpLeft + scoreLeft + lastNotePos.x - TIP_X;
+    const y = vpTop + scoreTop + lastNotePos.y - scrollEl.scrollTop - TIP_Y;
 
     quillEl.style.opacity = '1';
     quillEl.style.transform = `translate(${x}px, ${y}px)`;
@@ -156,7 +173,8 @@
 
   function autoScroll() {
     if (!scrollEl) return;
-    scrollEl.scrollLeft = scrollEl.scrollWidth;
+    // 多行布局: 纵向滚到最新一行
+    scrollEl.scrollTop = scrollEl.scrollHeight;
   }
 
   global.KBI_SCORE = { init, addNote, clear };

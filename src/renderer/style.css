@@ -148,7 +148,12 @@ html, body {
 }
 .instrument-art.bounce { transform: scale(1.06) rotate(-1.5deg); }
 .instrument-name { font-size: 24px; font-weight: 600; margin-top: 12px; z-index: 1; }
-.instrument-name.loading { color: var(--accent); animation: loadPulse 1.2s ease-in-out infinite; }
+.instrument-name.loading { color: var(--accent); }
+.instrument-name.loading::after {
+  content: ' · 加载音色中…';
+  font-size: 14px; opacity: 0.7;
+  animation: loadPulse 1.2s ease-in-out infinite;
+}
 @keyframes loadPulse { 0%,100%{opacity:0.5} 50%{opacity:1} }
 .hint { color: var(--ink-dim); font-size: 13px; margin-top: 8px; z-index: 1; }
 
@@ -194,17 +199,17 @@ html, body {
   border-radius: 12px;
   box-shadow: 0 6px 24px rgba(0,0,0,0.35), inset 0 0 40px rgba(184,166,125,0.18);
   overflow: hidden;         /* 谱面滚动被裁在羊皮纸内 */
-  display: flex; align-items: center;
+  display: flex; align-items: stretch;
 }
-/* 谱面视口: 内部横向滚动 */
+/* 谱面视口: 多行, 纵向滚动 */
 .score-viewport {
-  width: 100%;
-  overflow-x: auto; overflow-y: hidden;
-  padding: 14px 18px;       /* 五线谱不贴纸边 */
+  width: 100%; height: 100%;
+  overflow-x: hidden; overflow-y: auto;
+  padding: 14px 16px;       /* 五线谱不贴纸边 */
 }
 .score {
-  min-height: 150px;
-  display: inline-block;
+  min-height: 100px;
+  display: block;
 }
 
 /* 羽毛笔光标 (相对 .score-paper 定位) */
