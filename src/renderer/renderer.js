@@ -75,16 +75,19 @@
 
   // ------------------------------------------------------------------
   // 播放一个音 + 视觉反馈
+  //   keycode: 可选, 有则用于录制真实按键时长
+  //   isRepeat: 长按重复触发, 只发声不重复记录
   // ------------------------------------------------------------------
-  function triggerNote(note) {
+  function triggerNote(note, keycode) {
     if (!note || !audioReady) return;
     ENGINE.playNote(note);
     SCORE.addNote(note);
     spawnNoteBurst(note);
     bounceInstrument();
-    // 录制中则捕获
+    // 录制中则捕获(带 keycode 记录时长)
     if (REC.isRecording()) {
-      REC.capture(note);
+      if (keycode != null) REC.noteOn(note, keycode);
+      else REC.capture(note);
       recCount.textContent = REC.currentCount();
     }
   }
@@ -114,9 +117,20 @@
   // ------------------------------------------------------------------
   // 全局键盘事件(来自主进程 uiohook)
   // ------------------------------------------------------------------
+  const heldKeys = new Set(); // 当前按住的 keycode, 用于去重长按
+
   function onGlobalKey(payload) {
     const note = M.noteFromUiohook(payload.keycode);
-    if (note) triggerNote(note);
+    if (!note) return;
+    // 长按会连续触发 keydown, 已按住则忽略(等松开再算)
+    if (heldKeys.has(payload.keycode)) return;
+    heldKeys.add(payload.keycode);
+    triggerNote(note, payload.keycode);
+  }
+
+  function onGlobalKeyup(payload) {
+    heldKeys.delete(payload.keycode);
+    if (REC.isRecording()) REC.noteOff(payload.keycode);
   }
 
   // 网页内键盘(作为 fallback / 无权限时也能玩)
@@ -126,8 +140,15 @@
     const note = M.noteFromBrowserKey(e.key);
     if (note) {
       e.preventDefault();
-      triggerNote(note);
+      // 用 e.code 当作伪 keycode 配对 keyup, 记录真实时长
+      triggerNote(note, 'web:' + e.code);
     }
+  }
+
+  function onLocalKeyup(e) {
+    const code = 'web:' + e.code;
+    heldKeys.delete(code);
+    if (REC.isRecording()) REC.noteOff(code);
   }
 
   // ------------------------------------------------------------------
@@ -135,6 +156,16 @@
   // ------------------------------------------------------------------
   async function startAudio() {
     await ENGINE.ensureStarted();
+    // 采样加载状态 -> 更新 UI 提示
+    ENGINE.onLoadingChange((loading) => {
+      instrumentName.classList.toggle('loading', loading);
+      if (loading) {
+        instrumentName.dataset.orig = instrumentName.textContent;
+        instrumentName.textContent = '加载音色中…';
+      } else if (instrumentName.dataset.orig) {
+        instrumentName.textContent = instrumentName.dataset.orig;
+      }
+    });
     ENGINE.setInstrument(selectedInstrument);
     audioReady = true;
     startOverlay.classList.add('hidden');
@@ -326,9 +357,11 @@
     // 全局键盘(Electron)
     if (window.kbi) {
       window.kbi.onGlobalKeydown(onGlobalKey);
+      if (window.kbi.onGlobalKeyup) window.kbi.onGlobalKeyup(onGlobalKeyup);
     }
     // 网页内键盘 fallback
     window.addEventListener('keydown', onLocalKey);
+    window.addEventListener('keyup', onLocalKeyup);
   }
 
   // ------------------------------------------------------------------

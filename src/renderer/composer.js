@@ -60,11 +60,13 @@
 
   // ---- 节奏量化 ----
   // 把事件时间戳吸附到 16 分音符网格; 根据平均间隔估算 BPM
+  // events: [{ note, t, dur }]  dur=真实按键时长(ms)
   function quantize(events) {
     if (events.length < 2) {
-      return { bpm: 90, notes: events.map((e) => ({ note: e.note, start: 0, beats: 1 })) };
+      return { bpm: 90, beatMs: 666, stepMs: 166,
+        notes: events.map((e) => ({ note: e.note, step: 0, durSteps: 2 })) };
     }
-    // 估算 BPM: 用相邻音间隔中位数当作一个"步进"
+    // 估算 BPM: 用相邻音起始间隔中位数当作一个"步进"
     const gaps = [];
     for (let i = 1; i < events.length; i++) gaps.push(events[i].t - events[i - 1].t);
     gaps.sort((a, b) => a - b);
@@ -76,16 +78,19 @@
     const stepMs = beatMs / 4; // 16 分音符网格
 
     // 把每个事件量化到网格步
-    const stepped = events.map((e) => ({ note: e.note, step: Math.round(e.t / stepMs) }));
-
-    // 去重(同一步同一音只保留一个)并转成带时值的音符
     const notes = [];
-    for (let i = 0; i < stepped.length; i++) {
-      const cur = stepped[i];
-      const next = stepped[i + 1];
-      let durSteps = next ? Math.max(1, next.step - cur.step) : 2;
-      durSteps = Math.min(durSteps, 8); // 最长两拍
-      notes.push({ note: cur.note, step: cur.step, durSteps });
+    for (let i = 0; i < events.length; i++) {
+      const e = events[i];
+      const step = Math.round(e.t / stepMs);
+      // 时值优先用真实按键时长; 没有则用到下一个音的间隔
+      let durMs = e.dur;
+      if (!durMs || durMs < 40) {
+        const next = events[i + 1];
+        durMs = next ? (next.t - e.t) : stepMs * 2;
+      }
+      let durSteps = Math.round(durMs / stepMs);
+      durSteps = Math.min(16, Math.max(1, durSteps)); // 1个16分 ~ 1个全音符
+      notes.push({ note: e.note, step, durSteps });
     }
     return { bpm, beatMs, stepMs, notes };
   }

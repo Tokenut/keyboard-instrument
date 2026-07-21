@@ -8,6 +8,9 @@ contextBridge.exposeInMainWorld('kbi', {
   onGlobalKeydown: (cb) => {
     ipcRenderer.on('global-keydown', (_e, payload) => cb(payload));
   },
+  onGlobalKeyup: (cb) => {
+    ipcRenderer.on('global-keyup', (_e, payload) => cb(payload));
+  },
 
   // 切换桌宠模式
   togglePetMode: (enable) => ipcRenderer.invoke('toggle-pet-mode', enable),

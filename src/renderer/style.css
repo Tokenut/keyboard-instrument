@@ -138,6 +138,8 @@ html, body {
 }
 .instrument-art.bounce { transform: scale(1.12) rotate(-2deg); }
 .instrument-name { font-size: 24px; font-weight: 600; margin-top: 12px; z-index: 1; }
+.instrument-name.loading { color: var(--accent); animation: loadPulse 1.2s ease-in-out infinite; }
+@keyframes loadPulse { 0%,100%{opacity:0.5} 50%{opacity:1} }
 .hint { color: var(--ink-dim); font-size: 13px; margin-top: 8px; z-index: 1; }
 
 .note-burst { position: absolute; inset: 0; pointer-events: none; z-index: 2; }

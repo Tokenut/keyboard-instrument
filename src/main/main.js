@@ -10,6 +10,11 @@
 const { app, BrowserWindow, ipcMain, screen } = require('electron');
 const path = require('path');
 
+// 彻底禁用后台节流(定时器/音频), 保证主窗口失焦时打字仍能发声
+app.commandLine.appendSwitch('disable-background-timer-throttling');
+app.commandLine.appendSwitch('disable-renderer-backgrounding');
+app.commandLine.appendSwitch('disable-backgrounding-occluded-windows');
+
 let uIOhook = null;
 let hookLoaded = false;
 try {
@@ -41,6 +46,8 @@ function createMainWindow() {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
       nodeIntegration: false,
+      // 关键: 关闭后台节流, 否则主窗口失焦时音频会被 Chromium 挂起/限流
+      backgroundThrottling: false,
     },
   });
 
@@ -80,6 +87,7 @@ function createPetWindow() {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
       nodeIntegration: false,
+      backgroundThrottling: false,
     },
   });
 
@@ -109,6 +117,14 @@ function startGlobalKeyboardHook() {
     }
     if (petWindow && !petWindow.isDestroyed()) {
       petWindow.webContents.send('global-keydown', payload);
+    }
+  });
+
+  // 转发 keyup, 用于计算每个音的按键时长(时值/节奏)
+  uIOhook.on('keyup', (e) => {
+    const payload = { keycode: e.keycode };
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      mainWindow.webContents.send('global-keyup', payload);
     }
   });
 

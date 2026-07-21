@@ -48,45 +48,72 @@
       id: 'piano',
       name: '钢琴',
       emoji: '🎹',
-      // 明亮、带衰减 —— 近似钢琴
-      synth: {
-        oscillator: { type: 'triangle' },
-        envelope: { attack: 0.005, decay: 0.6, sustain: 0.05, release: 1.2 },
+      // 真实钢琴采样 (Salamander)
+      sampler: {
+        baseUrl: '../../assets/samples/piano/',
+        urls: {
+          A1: 'A1.mp3', C2: 'C2.mp3', 'D#2': 'Ds2.mp3', 'F#2': 'Fs2.mp3',
+          A2: 'A2.mp3', C3: 'C3.mp3', 'D#3': 'Ds3.mp3', 'F#3': 'Fs3.mp3',
+          A3: 'A3.mp3', C4: 'C4.mp3', 'D#4': 'Ds4.mp3', 'F#4': 'Fs4.mp3',
+          A4: 'A4.mp3', C5: 'C5.mp3', 'D#5': 'Ds5.mp3', 'F#5': 'Fs5.mp3',
+          A5: 'A5.mp3', C6: 'C6.mp3',
+        },
+        release: 1.2,
       },
     },
     guitar: {
       id: 'guitar',
       name: '吉他',
       emoji: '🎸',
-      synth: {
-        oscillator: { type: 'sawtooth' },
-        envelope: { attack: 0.01, decay: 0.4, sustain: 0.0, release: 0.8 },
+      // 真实原声吉他采样
+      sampler: {
+        baseUrl: '../../assets/samples/guitar/',
+        urls: {
+          'F#2': 'Fs2.mp3',
+          A2: 'A2.mp3', C3: 'C3.mp3', 'D#3': 'Ds3.mp3', 'F#3': 'Fs3.mp3',
+          A3: 'A3.mp3', C4: 'C4.mp3', 'D#4': 'Ds4.mp3', 'F#4': 'Fs4.mp3',
+          A4: 'A4.mp3', C5: 'C5.mp3',
+        },
+        release: 0.8,
       },
     },
     music_box: {
       id: 'music_box',
       name: '八音盒',
       emoji: '🎶',
+      // 八音盒: 高频泛音 + 极快衰减, 合成也很像
       synth: {
+        harmonicity: 3.5,
+        modulationIndex: 8,
         oscillator: { type: 'sine' },
-        envelope: { attack: 0.001, decay: 0.9, sustain: 0.0, release: 1.5 },
+        envelope: { attack: 0.001, decay: 1.2, sustain: 0.0, release: 1.6 },
+        modulation: { type: 'sine' },
+        modulationEnvelope: { attack: 0.002, decay: 0.2, sustain: 0, release: 0.2 },
       },
+      synthType: 'FMSynth',
     },
     flute: {
       id: 'flute',
       name: '长笛',
       emoji: '🪈',
-      synth: {
-        oscillator: { type: 'sine' },
-        envelope: { attack: 0.08, decay: 0.1, sustain: 0.7, release: 0.4 },
+      // 真实长笛采样
+      sampler: {
+        baseUrl: '../../assets/samples/flute/',
+        urls: {
+          C4: 'C4.mp3', E4: 'E4.mp3', A4: 'A4.mp3',
+          C5: 'C5.mp3', E5: 'E5.mp3', A5: 'A5.mp3',
+          C6: 'C6.mp3', E6: 'E6.mp3',
+        },
+        release: 0.6,
       },
     },
     synth_wave: {
       id: 'synth_wave',
       name: '合成器',
       emoji: '🎛️',
+      // 电子合成音本就该是合成的; 加锯齿+滤波更有质感
       synth: {
-        oscillator: { type: 'square' },
+        oscillator: { type: 'fatsawtooth', count: 3, spread: 20 },
         envelope: { attack: 0.02, decay: 0.2, sustain: 0.4, release: 0.6 },
       },
     },
