@@ -47,7 +47,6 @@
     piano: {
       id: 'piano',
       name: '钢琴',
-      emoji: '🎹',
       art: '../../assets/instruments/piano.svg',
       // 真实钢琴采样 (Salamander)
       sampler: {
@@ -62,27 +61,26 @@
         release: 1.2,
       },
     },
-    guitar: {
-      id: 'guitar',
-      name: '吉他',
-      emoji: '🎸',
-      // 真实原声吉他采样
-      sampler: {
-        baseUrl: '../../assets/samples/guitar/',
-        urls: {
-          'F#2': 'Fs2.mp3',
-          A2: 'A2.mp3', C3: 'C3.mp3', 'D#3': 'Ds3.mp3', 'F#3': 'Fs3.mp3',
-          A3: 'A3.mp3', C4: 'C4.mp3', 'D#4': 'Ds4.mp3', 'F#4': 'Fs4.mp3',
-          A4: 'A4.mp3', C5: 'C5.mp3',
-        },
-        release: 0.8,
+    epiano: {
+      id: 'epiano',
+      name: '电钢琴',
+      art: '../../assets/instruments/epiano.svg',
+      // 电钢: FM 合成的经典电钢音色(类似 Rhodes)
+      synth: {
+        harmonicity: 2,
+        modulationIndex: 4,
+        oscillator: { type: 'sine' },
+        envelope: { attack: 0.004, decay: 0.8, sustain: 0.15, release: 1.0 },
+        modulation: { type: 'sine' },
+        modulationEnvelope: { attack: 0.01, decay: 0.4, sustain: 0.1, release: 0.4 },
       },
+      synthType: 'FMSynth',
     },
     music_box: {
       id: 'music_box',
       name: '八音盒',
-      emoji: '🎶',
-      // 八音盒: 高频泛音 + 极快衰减, 合成也很像
+      art: '../../assets/instruments/music_box.svg',
+      // 八音盒: 高频泛音 + 极快衰减
       synth: {
         harmonicity: 3.5,
         modulationIndex: 8,
@@ -93,30 +91,40 @@
       },
       synthType: 'FMSynth',
     },
-    flute: {
-      id: 'flute',
-      name: '长笛',
-      emoji: '🪈',
-      // 真实长笛采样
-      sampler: {
-        baseUrl: '../../assets/samples/flute/',
-        urls: {
-          C4: 'C4.mp3', E4: 'E4.mp3', A4: 'A4.mp3',
-          C5: 'C5.mp3', E5: 'E5.mp3', A5: 'A5.mp3',
-          C6: 'C6.mp3', E6: 'E6.mp3',
-        },
-        release: 0.6,
+    organ: {
+      id: 'organ',
+      name: '管风琴',
+      art: '../../assets/instruments/organ.svg',
+      // 管风琴: 持续音, 多正弦叠加感
+      synth: {
+        oscillator: { type: 'fatsine', count: 3, spread: 12 },
+        envelope: { attack: 0.03, decay: 0.0, sustain: 1.0, release: 0.25 },
       },
     },
     synth_wave: {
       id: 'synth_wave',
       name: '合成器',
-      emoji: '🎛️',
-      // 电子合成音本就该是合成的; 加锯齿+滤波更有质感
+      art: '../../assets/instruments/synth.svg',
+      // 电子合成音: 锯齿 + 宽度
       synth: {
         oscillator: { type: 'fatsawtooth', count: 3, spread: 20 },
         envelope: { attack: 0.02, decay: 0.2, sustain: 0.4, release: 0.6 },
       },
+    },
+    marimba: {
+      id: 'marimba',
+      name: '马林巴',
+      art: '../../assets/instruments/marimba.svg',
+      // 马林巴/木琴: 明亮短促的木质打击音
+      synth: {
+        harmonicity: 4,
+        modulationIndex: 2,
+        oscillator: { type: 'sine' },
+        envelope: { attack: 0.001, decay: 0.5, sustain: 0.0, release: 0.5 },
+        modulation: { type: 'sine' },
+        modulationEnvelope: { attack: 0.001, decay: 0.1, sustain: 0, release: 0.1 },
+      },
+      synthType: 'FMSynth',
     },
   };
 

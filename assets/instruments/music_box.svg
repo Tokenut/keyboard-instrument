@@ -1,0 +1,42 @@
+<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <!-- 八音盒 (木质盒子 + 旋转滚筒 + 音梳) -->
+  <defs>
+    <linearGradient id="mbWood" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#7a5a8f"/><stop offset="100%" stop-color="#3d2a52"/>
+    </linearGradient>
+    <linearGradient id="mbLid" x1="0" y1="0" x2="1" y2="0.5">
+      <stop offset="0%" stop-color="#9a7ab0"/><stop offset="100%" stop-color="#5a3f75"/>
+    </linearGradient>
+    <linearGradient id="mbGold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f0c96f"/><stop offset="100%" stop-color="#c99a3a"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="200" cy="345" rx="140" ry="18" fill="#000" opacity="0.3"/>
+  <!-- 盒身 -->
+  <path d="M90 210 L310 210 L310 320 L90 320 Z" fill="url(#mbWood)" stroke="#2a1b3a" stroke-width="2"/>
+  <!-- 盒身透视侧面 -->
+  <path d="M310 210 L340 185 L340 295 L310 320 Z" fill="#2f2145" stroke="#2a1b3a" stroke-width="2"/>
+  <!-- 掀开的盖子 -->
+  <path d="M90 210 L120 185 L340 185 L310 210 Z" fill="url(#mbLid)" stroke="#2a1b3a" stroke-width="2"/>
+  <path d="M120 185 L120 110 L340 110 L340 185 Z" fill="#4a3560" stroke="#2a1b3a" stroke-width="2" opacity="0.9"/>
+  <path d="M90 210 L90 135 L120 110 L120 185 Z" fill="#3a2850" stroke="#2a1b3a" stroke-width="2"/>
+  <!-- 内部: 金色滚筒 -->
+  <ellipse cx="180" cy="255" rx="14" ry="40" fill="url(#mbGold)" stroke="#8a6a2a" stroke-width="1.5" transform="rotate(-8 180 255)"/>
+  <rect x="180" y="228" width="90" height="52" rx="6" fill="url(#mbGold)" stroke="#8a6a2a" stroke-width="1.5"/>
+  <ellipse cx="270" cy="255" rx="14" ry="40" fill="#e0b451" stroke="#8a6a2a" stroke-width="1.5" transform="rotate(-8 270 255)"/>
+  <!-- 滚筒上的凸点 -->
+  <g fill="#7a5a1a">
+    <circle cx="205" cy="240" r="2.5"/><circle cx="225" cy="248" r="2.5"/>
+    <circle cx="245" cy="238" r="2.5"/><circle cx="215" cy="266" r="2.5"/>
+    <circle cx="238" cy="270" r="2.5"/>
+  </g>
+  <!-- 音梳 -->
+  <rect x="130" y="285" width="60" height="10" rx="2" fill="#d4d4dc"/>
+  <g stroke="#8a8a95" stroke-width="1"><line x1="140" y1="286" x2="140" y2="294"/><line x1="150" y1="286" x2="150" y2="294"/><line x1="160" y1="286" x2="160" y2="294"/><line x1="170" y1="286" x2="170" y2="294"/><line x1="180" y1="286" x2="180" y2="294"/></g>
+  <!-- 侧面摇柄 -->
+  <circle cx="340" cy="255" r="6" fill="#c99a3a"/>
+  <path d="M340 255 L365 255 L365 240" fill="none" stroke="#c99a3a" stroke-width="4" stroke-linecap="round"/>
+  <!-- 音符装饰 -->
+  <text x="255" y="150" font-size="30" fill="#f0c96f">♪</text>
+  <text x="290" y="170" font-size="22" fill="#c77dff">♫</text>
+</svg>

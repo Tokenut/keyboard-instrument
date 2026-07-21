@@ -1,0 +1,45 @@
+<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <!-- 管风琴 (一排音管 + 键盘) -->
+  <defs>
+    <linearGradient id="orgPipe" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#c9a94f"/><stop offset="45%" stop-color="#f0d68a"/><stop offset="100%" stop-color="#9a7a2a"/>
+    </linearGradient>
+    <linearGradient id="orgWood" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#4a3560"/><stop offset="100%" stop-color="#241a3a"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="200" cy="360" rx="150" ry="18" fill="#000" opacity="0.3"/>
+  <!-- 背板 -->
+  <rect x="80" y="40" width="240" height="240" rx="8" fill="url(#orgWood)" stroke="#1a1330" stroke-width="2"/>
+  <!-- 音管(高低不一, 金色) -->
+  <g stroke="#7a5a1a" stroke-width="1.5">
+    <rect x="98"  y="90"  width="24" height="180" rx="10" fill="url(#orgPipe)"/>
+    <rect x="128" y="60"  width="24" height="210" rx="10" fill="url(#orgPipe)"/>
+    <rect x="158" y="80"  width="24" height="190" rx="10" fill="url(#orgPipe)"/>
+    <rect x="188" y="50"  width="24" height="220" rx="10" fill="url(#orgPipe)"/>
+    <rect x="218" y="72"  width="24" height="198" rx="10" fill="url(#orgPipe)"/>
+    <rect x="248" y="62"  width="24" height="208" rx="10" fill="url(#orgPipe)"/>
+    <rect x="278" y="96"  width="24" height="174" rx="10" fill="url(#orgPipe)"/>
+  </g>
+  <!-- 管口高光 -->
+  <g fill="#fff6d8" opacity="0.5">
+    <rect x="102" y="94"  width="6" height="176" rx="3"/>
+    <rect x="132" y="64"  width="6" height="206" rx="3"/>
+    <rect x="192" y="54"  width="6" height="216" rx="3"/>
+    <rect x="252" y="66"  width="6" height="204" rx="3"/>
+  </g>
+  <!-- 键盘台 -->
+  <path d="M70 280 L330 280 L340 320 L60 320 Z" fill="#15101f" stroke="#0c0817" stroke-width="2"/>
+  <rect x="80" y="286" width="240" height="30" rx="3" fill="#fffdf5"/>
+  <g stroke="#c9c0a6" stroke-width="1.2">
+    <line x1="110" y1="287" x2="108" y2="315"/><line x1="140" y1="287" x2="138" y2="315"/>
+    <line x1="170" y1="287" x2="168" y2="315"/><line x1="200" y1="287" x2="198" y2="315"/>
+    <line x1="230" y1="287" x2="228" y2="315"/><line x1="260" y1="287" x2="258" y2="315"/>
+    <line x1="290" y1="287" x2="288" y2="315"/>
+  </g>
+  <g fill="#15101f">
+    <rect x="102" y="286" width="12" height="18" rx="2"/><rect x="132" y="286" width="12" height="18" rx="2"/>
+    <rect x="192" y="286" width="12" height="18" rx="2"/><rect x="222" y="286" width="12" height="18" rx="2"/>
+    <rect x="282" y="286" width="12" height="18" rx="2"/>
+  </g>
+</svg>

@@ -19,6 +19,7 @@
   const noteBurst = document.getElementById('noteBurst');
   const scoreEl = document.getElementById('score');
   const scoreScroll = document.getElementById('scoreScroll');
+  const scoreViewport = document.getElementById('scoreViewport');
   const quill = document.getElementById('quill');
   const startOverlay = document.getElementById('startOverlay');
   const startBtn = document.getElementById('startBtn');
@@ -49,7 +50,10 @@
       const btn = document.createElement('button');
       btn.className = 'instrument-chip';
       btn.dataset.id = inst.id;
-      btn.innerHTML = `<span class="chip-emoji">${inst.emoji}</span><span class="chip-name">${inst.name}</span>`;
+      const icon = inst.art
+        ? `<img class="chip-img" src="${inst.art}" alt="${inst.name}" />`
+        : `<span class="chip-emoji">${inst.emoji || '🎵'}</span>`;
+      btn.innerHTML = `${icon}<span class="chip-name">${inst.name}</span>`;
       btn.addEventListener('click', () => selectInstrument(inst.id));
       instrumentBar.appendChild(btn);
     });
@@ -69,7 +73,8 @@
     if (inst.art) {
       instrumentArt.innerHTML = `<img class="instrument-img" src="${inst.art}" alt="${inst.name}" />`;
     } else {
-      instrumentArt.textContent = inst.emoji;
+      instrumentArt.innerHTML = '';
+      instrumentArt.textContent = inst.emoji || '🎵';
     }
     instrumentName.textContent = inst.name;
     refreshInstrumentBar();
@@ -174,7 +179,7 @@
     ENGINE.setInstrument(selectedInstrument);
     audioReady = true;
     startOverlay.classList.add('hidden');
-    SCORE.init(scoreEl, scoreScroll, quill);
+    SCORE.init(scoreEl, scoreViewport, quill);
   }
 
   // ------------------------------------------------------------------

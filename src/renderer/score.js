@@ -8,10 +8,11 @@
   // VexFlow UMD 在浏览器挂到 window.Vex
   const VF = global.Vex && global.Vex.Flow ? global.Vex.Flow : (global.Vex || {});
 
-  const STAVE_W = 260;      // 每个小节宽度
+  const STAVE_W = 220;      // 每个小节宽度
   const NOTES_PER_MEASURE = 4; // 每小节音符数(4/4 拍, 四分音符)
-  const STAVE_H = 130;
+  const STAVE_H = 150;
   const LEFT_PAD = 10;
+  const MAX_NOTES = 32;     // 谱面最多保留的音符数(超过则滚动跟随)
 
   let container = null;   // #score
   let scrollEl = null;    // #scoreScroll
@@ -45,9 +46,9 @@
   // 添加一个音符并重绘
   function addNote(sciNote) {
     noteQueue.push({ note: sciNote, key: toVexKey(sciNote) });
-    // 最多保留一定数量, 防止无限增长(保留最近 40 个音)
-    if (noteQueue.length > 40) {
-      noteQueue = noteQueue.slice(noteQueue.length - 40);
+    // 最多保留一定数量, 防止无限增长
+    if (noteQueue.length > MAX_NOTES) {
+      noteQueue = noteQueue.slice(noteQueue.length - MAX_NOTES);
     }
     redraw();
     autoScroll();          // 先滚到末尾
@@ -130,23 +131,24 @@
   }
 
   // 把羽毛笔笔尖移到最后一个音符的真实绘制位置
+  //   quill 相对 .score-paper 定位; scrollEl = .score-viewport
   function positionQuillAtLast() {
     if (!quillEl || !lastNotePos || !container || !scrollEl) return;
 
-    // lastNotePos 是相对 #score 内 SVG 的坐标。
-    // quill 相对 .score-scroll 定位, 需换算:
-    //   score 相对 scroll 的偏移(含 padding) - scroll 已滚动距离 + 音符坐标
-    const scoreOffsetLeft = container.offsetLeft; // score 在 scroll 内的左偏移(含 padding)
-    const scoreOffsetTop = container.offsetTop;
-    // 笔尖在 SVG 左下角(约 x=8,y=58), 让笔尖对准音符
-    const TIP_X = 8, TIP_Y = 56;
+    // viewport 相对其定位父级(.score-paper)的偏移
+    const vpLeft = scrollEl.offsetLeft;
+    const vpTop = scrollEl.offsetTop;
+    // score(SVG容器)相对 viewport 的偏移(viewport 的 padding)
+    const scoreLeft = container.offsetLeft;
+    const scoreTop = container.offsetTop;
+    // 笔尖锚点(SVG 内笔尖位置)
+    const TIP_X = 8, TIP_Y = 52;
 
-    const x = scoreOffsetLeft + lastNotePos.x - TIP_X - scrollEl.scrollLeft;
-    const y = scoreOffsetTop + lastNotePos.y - TIP_Y;
+    const x = vpLeft + scoreLeft + lastNotePos.x - scrollEl.scrollLeft - TIP_X;
+    const y = vpTop + scoreTop + lastNotePos.y - TIP_Y;
 
     quillEl.style.opacity = '1';
     quillEl.style.transform = `translate(${x}px, ${y}px)`;
-    // 落笔小动画
     quillEl.classList.remove('quill-dip');
     void quillEl.offsetWidth;
     quillEl.classList.add('quill-dip');
@@ -155,8 +157,6 @@
   function autoScroll() {
     if (!scrollEl) return;
     scrollEl.scrollLeft = scrollEl.scrollWidth;
-    // 滚动后重新定位羽毛笔(因为 scrollLeft 变了)
-    positionQuillAtLast();
   }
 
   global.KBI_SCORE = { init, addNote, clear };

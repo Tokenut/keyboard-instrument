@@ -109,6 +109,7 @@ html, body {
   box-shadow: 0 4px 16px rgba(232,184,75,0.2);
 }
 .chip-emoji { font-size: 26px; }
+.chip-img { width: 34px; height: 34px; object-fit: contain; display: block; }
 .chip-name { font-size: 12px; }
 
 /* ============ 主体 ============ */
@@ -179,30 +180,41 @@ html, body {
   flex-shrink: 0;
 }
 .score-scroll {
-  flex: 1; overflow-x: auto; overflow-y: auto;
+  flex: 1; overflow: hidden;
   position: relative;
-  /* 谱子四周留白 padding */
-  padding: 28px 24px;
-  display: flex; align-items: flex-start;
+  padding: 24px;           /* 羊皮纸四周留白 */
+  display: flex; align-items: stretch;
   min-height: 0;
 }
-.score {
+/* 羊皮纸: 铺满可视区, 完整显示, 不随内容溢出 */
+.score-paper {
+  position: relative;
+  flex: 1;
   background: var(--parchment);
-  border-radius: 10px;
-  box-shadow: 0 6px 24px rgba(0,0,0,0.35), inset 0 0 40px rgba(184,166,125,0.15);
+  border-radius: 12px;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.35), inset 0 0 40px rgba(184,166,125,0.18);
+  overflow: hidden;         /* 谱面滚动被裁在羊皮纸内 */
+  display: flex; align-items: center;
+}
+/* 谱面视口: 内部横向滚动 */
+.score-viewport {
+  width: 100%;
+  overflow-x: auto; overflow-y: hidden;
+  padding: 14px 18px;       /* 五线谱不贴纸边 */
+}
+.score {
   min-height: 150px;
-  /* 谱子内部再留白, 五线谱不贴纸边 */
-  padding: 12px 16px;
+  display: inline-block;
 }
 
-/* 羽毛笔光标 */
+/* 羽毛笔光标 (相对 .score-paper 定位) */
 .quill {
   position: absolute; top: 0; left: 0;
-  width: 60px; height: 60px; pointer-events: none;
-  opacity: 0; transform-origin: 8px 56px; /* 笔尖为锚点 */
-  transition: transform .22s cubic-bezier(.34,1.4,.5,1), opacity .25s ease;
-  filter: drop-shadow(0 3px 5px rgba(0,0,0,0.35));
-  z-index: 5;
+  width: 56px; height: 56px; pointer-events: none;
+  opacity: 0; transform-origin: 8px 52px; /* 笔尖为锚点 */
+  transition: transform .2s cubic-bezier(.34,1.4,.5,1), opacity .25s ease;
+  filter: drop-shadow(0 3px 5px rgba(0,0,0,0.4));
+  z-index: 20;
   will-change: transform;
 }
 .quill.quill-dip { animation: dip .22s ease; }

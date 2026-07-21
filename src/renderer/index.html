@@ -54,11 +54,15 @@
           <button id="clearScore" class="btn btn-tiny">清空</button>
         </div>
       </div>
-      <!-- 五线谱滚动区 -->
+      <!-- 五线谱区: 羊皮纸铺满可视区, 内部谱面横向滚动 -->
       <div class="score-scroll" id="scoreScroll">
-        <div id="score" class="score"></div>
-        <!-- 羽毛笔光标 -->
-        <img id="quill" class="quill" src="../../assets/cursor/quill.svg" alt="羽毛笔" />
+        <div class="score-paper">
+          <div class="score-viewport" id="scoreViewport">
+            <div id="score" class="score"></div>
+          </div>
+          <!-- 羽毛笔光标 -->
+          <img id="quill" class="quill" src="../../assets/cursor/quill.svg" alt="羽毛笔" />
+        </div>
       </div>
     </section>
   </main>

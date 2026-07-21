@@ -1,0 +1,37 @@
+<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <!-- 电钢琴 (数码钢琴, 带支架) -->
+  <defs>
+    <linearGradient id="epBody" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#3a2f4d"/><stop offset="100%" stop-color="#1a1330"/>
+    </linearGradient>
+    <linearGradient id="epKeys" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fffdf5"/><stop offset="100%" stop-color="#ddd4bf"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="200" cy="360" rx="150" ry="18" fill="#000" opacity="0.3"/>
+  <!-- 支架腿 -->
+  <path d="M120 300 L110 350 L124 350 L134 300 Z" fill="#241a3a" stroke="#0c0817" stroke-width="1.5"/>
+  <path d="M280 300 L290 350 L276 350 L266 300 Z" fill="#241a3a" stroke="#0c0817" stroke-width="1.5"/>
+  <rect x="118" y="340" width="164" height="8" rx="3" fill="#1a1330"/>
+  <!-- 主机身(斜面) -->
+  <path d="M90 150 L310 150 L322 210 L78 210 Z" fill="url(#epBody)" stroke="#0c0817" stroke-width="2"/>
+  <!-- 控制面板 -->
+  <rect x="100" y="160" width="200" height="20" rx="4" fill="#15101f"/>
+  <circle cx="120" cy="170" r="5" fill="#e8b84b"/>
+  <circle cx="138" cy="170" r="5" fill="#c77dff"/>
+  <rect x="160" y="166" width="120" height="8" rx="4" fill="#2a2140"/>
+  <!-- 键盘 -->
+  <path d="M84 208 L316 208 L326 250 L74 250 Z" fill="#15101f" stroke="#0c0817" stroke-width="2"/>
+  <rect x="90" y="212" width="220" height="34" rx="3" fill="url(#epKeys)"/>
+  <g stroke="#c9c0a6" stroke-width="1.2">
+    <line x1="118" y1="213" x2="116" y2="245"/><line x1="146" y1="213" x2="144" y2="245"/>
+    <line x1="174" y1="213" x2="172" y2="245"/><line x1="202" y1="213" x2="200" y2="245"/>
+    <line x1="230" y1="213" x2="228" y2="245"/><line x1="258" y1="213" x2="256" y2="245"/>
+    <line x1="286" y1="213" x2="284" y2="245"/>
+  </g>
+  <g fill="#15101f">
+    <rect x="110" y="212" width="12" height="20" rx="2"/><rect x="138" y="212" width="12" height="20" rx="2"/>
+    <rect x="180" y="212" width="12" height="20" rx="2"/><rect x="208" y="212" width="12" height="20" rx="2"/>
+    <rect x="236" y="212" width="12" height="20" rx="2"/><rect x="278" y="212" width="12" height="20" rx="2"/>
+  </g>
+</svg>

@@ -1,0 +1,41 @@
+<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+  <!-- 合成器 (旋钮面板 + 迷你键盘) -->
+  <defs>
+    <linearGradient id="synBody" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#37506b"/><stop offset="100%" stop-color="#1c2838"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="200" cy="350" rx="150" ry="18" fill="#000" opacity="0.3"/>
+  <!-- 机身 -->
+  <rect x="70" y="120" width="260" height="200" rx="14" fill="url(#synBody)" stroke="#0c141f" stroke-width="2"/>
+  <!-- 顶部控制区 -->
+  <rect x="88" y="138" width="224" height="90" rx="8" fill="#12202e"/>
+  <!-- 旋钮 -->
+  <g>
+    <circle cx="118" cy="168" r="14" fill="#2a3a4d" stroke="#e8b84b" stroke-width="2"/><line x1="118" y1="168" x2="118" y2="157" stroke="#e8b84b" stroke-width="2.5" stroke-linecap="round"/>
+    <circle cx="160" cy="168" r="14" fill="#2a3a4d" stroke="#c77dff" stroke-width="2"/><line x1="160" y1="168" x2="169" y2="161" stroke="#c77dff" stroke-width="2.5" stroke-linecap="round"/>
+    <circle cx="202" cy="168" r="14" fill="#2a3a4d" stroke="#4ade80" stroke-width="2"/><line x1="202" y1="168" x2="210" y2="175" stroke="#4ade80" stroke-width="2.5" stroke-linecap="round"/>
+  </g>
+  <!-- 推子 -->
+  <g>
+    <rect x="250" y="150" width="6" height="60" rx="3" fill="#2a3a4d"/><rect x="246" y="165" width="14" height="8" rx="2" fill="#e8b84b"/>
+    <rect x="274" y="150" width="6" height="60" rx="3" fill="#2a3a4d"/><rect x="270" y="185" width="14" height="8" rx="2" fill="#c77dff"/>
+    <rect x="298" y="150" width="6" height="60" rx="3" fill="#2a3a4d"/><rect x="294" y="172" width="14" height="8" rx="2" fill="#4ade80"/>
+  </g>
+  <!-- 波形显示 -->
+  <path d="M100 205 Q110 190 120 205 T140 205 T160 205" fill="none" stroke="#4ade80" stroke-width="2" opacity="0.8"/>
+  <!-- 键盘 -->
+  <rect x="82" y="238" width="236" height="66" rx="4" fill="#0c141f"/>
+  <rect x="90" y="244" width="220" height="54" rx="3" fill="#fffdf5"/>
+  <g stroke="#c9c0a6" stroke-width="1.2">
+    <line x1="118" y1="245" x2="118" y2="297"/><line x1="146" y1="245" x2="146" y2="297"/>
+    <line x1="174" y1="245" x2="174" y2="297"/><line x1="202" y1="245" x2="202" y2="297"/>
+    <line x1="230" y1="245" x2="230" y2="297"/><line x1="258" y1="245" x2="258" y2="297"/>
+    <line x1="286" y1="245" x2="286" y2="297"/>
+  </g>
+  <g fill="#15101f">
+    <rect x="110" y="244" width="14" height="32" rx="2"/><rect x="138" y="244" width="14" height="32" rx="2"/>
+    <rect x="194" y="244" width="14" height="32" rx="2"/><rect x="222" y="244" width="14" height="32" rx="2"/>
+    <rect x="250" y="244" width="14" height="32" rx="2"/>
+  </g>
+</svg>
