@@ -1,14 +1,13 @@
 // ==========================================================================
 // pet.js — 桌宠窗口逻辑
 //   · 显示当前乐器
-//   · 全局打字时: 冒出小音符动效 + 轻微跳动 + 发声
+//   · 全局打字时: 冒出小音符动效 + 轻微跳动 (发声由主窗口进程负责)
 //   · 点击本体 -> 回到主窗口
 // ==========================================================================
 (function () {
   'use strict';
 
   const M = window.KBI_MUSIC;
-  const ENGINE = window.KBI_ENGINE;
 
   const petArt = document.getElementById('petArt');
   const petBody = document.getElementById('petBody');
@@ -17,7 +16,6 @@
   const petTip = document.getElementById('petTip');
 
   let currentInstrument = M.DEFAULT_INSTRUMENT;
-  let audioReady = false;
   let idleTimer = null;
 
   // 初始乐器外观
@@ -25,22 +23,11 @@
     currentInstrument = id;
     const inst = M.INSTRUMENTS[id] || M.INSTRUMENTS[M.DEFAULT_INSTRUMENT];
     petArt.textContent = inst.emoji;
-    if (audioReady) ENGINE.setInstrument(id);
   }
 
-  // 桌宠也独立发声(主窗口隐藏时更稳)
-  async function ensureAudio() {
-    if (audioReady) return;
-    try {
-      await ENGINE.ensureStarted();
-      ENGINE.setInstrument(currentInstrument);
-      audioReady = true;
-    } catch (_) { /* 需要手势, 首次打字可能静音, 点一下即可 */ }
-  }
-
-  // 打字反馈
+  // 打字反馈 (纯视觉; 发声由主窗口进程处理, 避免桌宠独立音频上下文无法解锁)
   const GLYPHS = ['♪', '♫', '♩', '♬'];
-  function reactToKey(note) {
+  function reactToKey() {
     // 醒来
     petBody.classList.remove('sleeping');
     petZzz.classList.remove('show');
@@ -50,8 +37,6 @@
     petArt.classList.add('hop');
     // 冒音符
     spawnNote();
-    // 发声
-    if (audioReady && note) ENGINE.playNote(note);
 
     // 一段时间没输入 -> 睡觉
     clearTimeout(idleTimer);
@@ -77,9 +62,8 @@
   // ------------------------------------------------------------------
   if (window.kbi) {
     window.kbi.onGlobalKeydown((payload) => {
-      ensureAudio();
       const note = M.noteFromUiohook(payload.keycode);
-      reactToKey(note);
+      if (note) reactToKey();
     });
     window.kbi.onInstrumentChanged((id) => applyInstrument(id));
   }

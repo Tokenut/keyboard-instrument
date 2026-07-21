@@ -30,6 +30,7 @@ let petWindow = null;
 
 // 当前是否处于「桌宠模式」(主窗口隐藏, 只留桌宠)
 let petMode = false;
+let savedBounds = null; // 进入桌宠模式前主窗口的位置尺寸
 
 // --------------------------------------------------------------------------
 // 创建主窗口
@@ -56,6 +57,13 @@ function createMainWindow() {
   if (process.argv.includes('--dev')) {
     mainWindow.webContents.openDevTools({ mode: 'detach' });
   }
+
+  // 拦截「最小化」: macOS 会挂起最小化窗口的音频进程, 导致打字没声。
+  // 改为自动进入桌宠模式(常驻置顶悬浮窗不会被挂起, 且独立发声)。
+  mainWindow.on('minimize', (e) => {
+    e.preventDefault();
+    enterPetMode();
+  });
 
   mainWindow.on('closed', () => {
     mainWindow = null;
@@ -137,19 +145,43 @@ function startGlobalKeyboardHook() {
 }
 
 // --------------------------------------------------------------------------
+// 进入 / 退出 桌宠模式 (供最小化拦截 & IPC 共用)
+// --------------------------------------------------------------------------
+function enterPetMode() {
+  petMode = true;
+  if (petWindow) petWindow.show();
+  if (mainWindow) {
+    if (mainWindow.isMinimized()) mainWindow.restore(); // 撤销最小化动作
+    // 不用 hide(): macOS 会挂起隐藏窗口音频。改为移到屏幕外+设透明,
+    // 让窗口对系统保持"存活", 音频进程不被挂起, 打字持续发声。
+    savedBounds = mainWindow.getBounds();
+    mainWindow.setOpacity(0);
+    mainWindow.setIgnoreMouseEvents(true);
+    mainWindow.setBounds({ x: -32000, y: -32000, width: savedBounds.width, height: savedBounds.height });
+    mainWindow.setSkipTaskbar(true);
+  }
+}
+
+function exitPetMode() {
+  petMode = false;
+  if (petWindow) petWindow.hide();
+  if (mainWindow) {
+    if (savedBounds) mainWindow.setBounds(savedBounds);
+    mainWindow.setOpacity(1);
+    mainWindow.setIgnoreMouseEvents(false);
+    mainWindow.setSkipTaskbar(false);
+    mainWindow.show();
+    mainWindow.focus();
+  }
+}
+
+// --------------------------------------------------------------------------
 // IPC: 渲染进程 <-> 主进程
 // --------------------------------------------------------------------------
 function registerIpc() {
   // 切换桌宠模式(隐藏/显示主窗口)
   ipcMain.handle('toggle-pet-mode', (_evt, enable) => {
-    petMode = enable;
-    if (enable) {
-      if (petWindow) petWindow.show();
-      if (mainWindow) mainWindow.hide();
-    } else {
-      if (petWindow) petWindow.hide();
-      if (mainWindow) mainWindow.show();
-    }
+    if (enable) enterPetMode(); else exitPetMode();
     return petMode;
   });
 
@@ -162,12 +194,7 @@ function registerIpc() {
 
   // 桌宠被点击 -> 请求返回主窗口
   ipcMain.on('pet-clicked', () => {
-    petMode = false;
-    if (petWindow) petWindow.hide();
-    if (mainWindow) {
-      mainWindow.show();
-      mainWindow.focus();
-    }
+    exitPetMode();
   });
 
   // 查询全局 hook 是否可用(用于前端提示用户授权)
