@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:;" />
+  <title>Keyboard Instrument · 键盘乐器</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- ============ 顶栏 ============ -->
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">♪</span>
+      <span class="brand-text">Keyboard&nbsp;Instrument</span>
+    </div>
+    <div class="topbar-actions">
+      <div id="hookStatus" class="hook-status" title="全局键盘监听状态">
+        <span class="dot"></span><span class="hook-label">检测中…</span>
+      </div>
+      <label class="vol">
+        <span>音量</span>
+        <input id="volume" type="range" min="-40" max="0" value="-6" />
+      </label>
+      <button id="petBtn" class="btn btn-ghost" title="缩到屏幕角落变成桌宠">
+        缩成桌宠 ▸
+      </button>
+    </div>
+  </header>
+
+  <!-- ============ 乐器选择条 ============ -->
+  <nav class="instrument-bar" id="instrumentBar"></nav>
+
+  <!-- ============ 主体 ============ -->
+  <main class="stage">
+    <!-- 左: 乐器展示区 -->
+    <section class="instrument-view">
+      <div class="instrument-glow"></div>
+      <div id="instrumentArt" class="instrument-art">🎹</div>
+      <div id="instrumentName" class="instrument-name">钢琴</div>
+      <div class="hint">开始打字，让文字变成音乐 ♫</div>
+      <!-- 键盘发声时冒出的音符动效容器 -->
+      <div id="noteBurst" class="note-burst"></div>
+    </section>
+
+    <!-- 右: 五线谱记谱 -->
+    <section class="score-panel">
+      <div class="score-header">
+        <span>你的乐谱</span>
+        <div class="score-tools">
+          <button id="clearScore" class="btn btn-tiny">清空</button>
+        </div>
+      </div>
+      <!-- 五线谱滚动区 -->
+      <div class="score-scroll" id="scoreScroll">
+        <div id="score" class="score"></div>
+        <!-- 羽毛笔光标 -->
+        <img id="quill" class="quill" src="../../assets/cursor/quill.svg" alt="羽毛笔" />
+      </div>
+    </section>
+  </main>
+
+  <!-- ============ 启动遮罩(需用户手势解锁音频) ============ -->
+  <div id="startOverlay" class="start-overlay">
+    <div class="start-card">
+      <div class="start-emoji">🎹</div>
+      <h1>键盘乐器</h1>
+      <p>打字即演奏。你敲下的每个字母都会变成音符，<br/>并实时写进右侧的五线谱。</p>
+      <button id="startBtn" class="btn btn-primary">开始演奏</button>
+      <p class="start-note">首次启动需授予「辅助功能」权限以监听全局键盘</p>
+    </div>
+  </div>
+
+  <!-- 依赖 -->
+  <script src="../vendor/Tone.js"></script>
+  <script src="../vendor/vexflow.js"></script>
+  <script src="music.js"></script>
+  <script src="engine.js"></script>
+  <script src="score.js"></script>
+  <script src="renderer.js"></script>
+</body>
+</html>

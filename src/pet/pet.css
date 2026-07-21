@@ -1,0 +1,92 @@
+/* ==========================================================================
+   pet.css — 桌宠悬浮窗 (透明窗口)
+   ========================================================================== */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  width: 100%; height: 100%;
+  background: transparent;        /* 关键: 透明窗口 */
+  overflow: hidden;
+  font-family: -apple-system, "PingFang SC", system-ui, sans-serif;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.pet-root {
+  position: relative;
+  width: 100%; height: 100%;
+  display: flex; align-items: flex-end; justify-content: center;
+  padding-bottom: 14px;
+}
+
+/* 音符层 */
+.pet-notes { position: absolute; inset: 0; pointer-events: none; }
+.pet-note {
+  position: absolute; bottom: 70px;
+  font-size: 22px;
+  color: hsl(var(--hue,45) 85% 68%);
+  text-shadow: 0 0 10px hsla(var(--hue,45) 85% 68% / 0.7);
+  animation: petFloat 1.2s ease-out forwards;
+}
+@keyframes petFloat {
+  0%   { transform: translate(0,0) scale(0.4); opacity: 0; }
+  20%  { opacity: 1; transform: translate(0,-8px) scale(1.1); }
+  100% { transform: translate(var(--drift,0), -120px) scale(0.8); opacity: 0; }
+}
+
+/* 桌宠本体 */
+.pet-body {
+  position: relative;
+  cursor: pointer;
+  display: flex; flex-direction: column; align-items: center;
+  -webkit-app-region: drag;              /* 可拖动 */
+  pointer-events: auto;
+}
+.pet-art {
+  font-size: 84px;
+  filter: drop-shadow(0 6px 12px rgba(0,0,0,0.45));
+  transition: transform .12s ease;
+  animation: idleBob 3s ease-in-out infinite;
+}
+.pet-body.sleeping .pet-art {
+  animation: sleepBreath 3.5s ease-in-out infinite;
+  filter: drop-shadow(0 6px 12px rgba(0,0,0,0.3)) saturate(0.7) brightness(0.9);
+}
+.pet-art.hop { animation: hop .28s ease; }
+
+@keyframes idleBob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
+@keyframes sleepBreath { 0%,100%{transform:scale(1)} 50%{transform:scale(1.04)} }
+@keyframes hop {
+  0%   { transform: translateY(0) scale(1); }
+  40%  { transform: translateY(-16px) scale(1.14) rotate(-4deg); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+/* 影子 */
+.pet-shadow {
+  position: absolute; bottom: -2px; left: 50%; transform: translateX(-50%);
+  width: 70px; height: 12px; border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(0,0,0,0.35), transparent 70%);
+  z-index: -1;
+}
+
+/* Zzz 睡眠提示 */
+.pet-zzz {
+  position: absolute; top: -6px; right: -6px;
+  font-size: 14px; color: #cbb6ff; font-style: italic;
+  opacity: 0; transition: opacity .4s ease;
+  text-shadow: 0 0 8px rgba(199,125,255,0.6);
+}
+.pet-zzz.show { opacity: 0.9; animation: zzzFloat 2.5s ease-in-out infinite; }
+@keyframes zzzFloat { 0%,100%{transform:translateY(0);opacity:.5} 50%{transform:translateY(-6px);opacity:.9} }
+
+/* 悬停提示 */
+.pet-tip {
+  position: absolute; bottom: 0; left: 50%; transform: translateX(-50%) translateY(10px);
+  background: rgba(20,14,32,0.9); color: #f4ecdc;
+  font-size: 11px; padding: 4px 10px; border-radius: 12px;
+  white-space: nowrap; opacity: 0; transition: all .2s ease;
+  border: 1px solid rgba(255,255,255,0.1);
+  pointer-events: none;
+}
+.pet-tip.show { opacity: 1; transform: translateX(-50%) translateY(0); }

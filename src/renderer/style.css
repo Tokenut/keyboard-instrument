@@ -1,0 +1,220 @@
+/* ==========================================================================
+   style.css — 主窗口样式
+   主题: 深夜暖调 + 羊皮纸乐谱 + 复古羽毛笔
+   ========================================================================== */
+
+:root {
+  --bg: #1a1526;
+  --bg-2: #241b35;
+  --panel: #2b2140;
+  --ink: #f4ecdc;
+  --ink-dim: #b9ad97;
+  --accent: #e8b84b;      /* 金 */
+  --accent-2: #c77dff;    /* 紫 */
+  --parchment: #f6ecd4;   /* 乐谱羊皮纸 */
+  --parchment-line: #b8a67d;
+  --danger: #ff6b6b;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  font-family: -apple-system, "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  color: var(--ink);
+  background:
+    radial-gradient(1200px 600px at 20% -10%, #33254d 0%, transparent 60%),
+    radial-gradient(900px 500px at 110% 20%, #2a1f3f 0%, transparent 55%),
+    var(--bg);
+  user-select: none;
+}
+
+/* ============ 顶栏 ============ */
+.topbar {
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  background: rgba(0,0,0,0.15);
+  -webkit-app-region: drag;
+}
+.topbar .btn, .topbar input, .topbar .hook-status { -webkit-app-region: no-drag; }
+
+.brand { display: flex; align-items: center; gap: 10px; }
+.brand-mark {
+  font-size: 22px; color: var(--accent);
+  text-shadow: 0 0 12px rgba(232,184,75,0.5);
+}
+.brand-text { font-weight: 600; letter-spacing: 0.5px; }
+
+.topbar-actions { display: flex; align-items: center; gap: 16px; }
+
+.hook-status {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 12px; color: var(--ink-dim);
+  padding: 4px 10px; border-radius: 20px;
+  background: rgba(255,255,255,0.04);
+}
+.hook-status .dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--danger);
+  box-shadow: 0 0 8px var(--danger);
+}
+.hook-status.ok .dot { background: #4ade80; box-shadow: 0 0 8px #4ade80; }
+
+.vol { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--ink-dim); }
+.vol input { width: 90px; accent-color: var(--accent); }
+
+/* ============ 按钮 ============ */
+.btn {
+  border: none; cursor: pointer; font-family: inherit;
+  border-radius: 10px; padding: 8px 14px; font-size: 13px;
+  transition: transform .1s ease, background .2s ease, box-shadow .2s ease;
+}
+.btn:active { transform: scale(0.96); }
+.btn-ghost {
+  background: rgba(255,255,255,0.06); color: var(--ink);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+.btn-ghost:hover { background: rgba(255,255,255,0.12); }
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent), #f0c96f);
+  color: #3a2c07; font-weight: 700; padding: 12px 32px; font-size: 15px;
+  box-shadow: 0 6px 20px rgba(232,184,75,0.35);
+}
+.btn-primary:hover { box-shadow: 0 8px 28px rgba(232,184,75,0.5); }
+.btn-tiny { padding: 4px 10px; font-size: 12px; background: rgba(255,255,255,0.06); color: var(--ink-dim); }
+.btn-tiny:hover { background: rgba(255,255,255,0.12); color: var(--ink); }
+
+/* ============ 乐器选择条 ============ */
+.instrument-bar {
+  display: flex; gap: 10px; padding: 14px 20px;
+  overflow-x: auto; border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.instrument-chip {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  min-width: 76px; padding: 10px 8px; cursor: pointer;
+  background: var(--panel); border: 1px solid transparent;
+  border-radius: 14px; color: var(--ink-dim);
+  transition: all .18s ease; font-family: inherit;
+}
+.instrument-chip:hover { transform: translateY(-2px); color: var(--ink); }
+.instrument-chip.active {
+  border-color: var(--accent); color: var(--ink);
+  background: linear-gradient(180deg, rgba(232,184,75,0.18), var(--panel));
+  box-shadow: 0 4px 16px rgba(232,184,75,0.2);
+}
+.chip-emoji { font-size: 26px; }
+.chip-name { font-size: 12px; }
+
+/* ============ 主体 ============ */
+.stage {
+  display: grid; grid-template-columns: 1fr 1.1fr;
+  gap: 20px; padding: 20px; height: calc(100% - 56px - 71px);
+}
+
+/* 乐器展示区 */
+.instrument-view {
+  position: relative; border-radius: 20px;
+  background: linear-gradient(180deg, var(--bg-2), #1c1530);
+  border: 1px solid rgba(255,255,255,0.06);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  overflow: hidden;
+}
+.instrument-glow {
+  position: absolute; width: 300px; height: 300px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(199,125,255,0.25), transparent 70%);
+  filter: blur(20px); animation: pulse 4s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100%{transform:scale(1);opacity:.6} 50%{transform:scale(1.15);opacity:1} }
+.instrument-art {
+  font-size: 120px; z-index: 1;
+  filter: drop-shadow(0 8px 24px rgba(0,0,0,0.4));
+  transition: transform .1s ease;
+}
+.instrument-art.bounce { transform: scale(1.12) rotate(-2deg); }
+.instrument-name { font-size: 24px; font-weight: 600; margin-top: 12px; z-index: 1; }
+.hint { color: var(--ink-dim); font-size: 13px; margin-top: 8px; z-index: 1; }
+
+.note-burst { position: absolute; inset: 0; pointer-events: none; z-index: 2; }
+.floating-note {
+  position: absolute; bottom: 30%;
+  font-size: 28px;
+  color: hsl(var(--hue, 45) 80% 65%);
+  text-shadow: 0 0 12px hsla(var(--hue,45) 80% 65% / 0.6);
+  animation: floatUp 1.4s ease-out forwards;
+}
+@keyframes floatUp {
+  0%   { transform: translate(0,0) scale(0.5); opacity: 0; }
+  15%  { opacity: 1; transform: translate(0,-10px) scale(1.1); }
+  100% { transform: translate(var(--drift,0), -180px) scale(0.9); opacity: 0; }
+}
+
+/* 五线谱面板 */
+.score-panel {
+  border-radius: 20px; background: var(--panel);
+  border: 1px solid rgba(255,255,255,0.06);
+  display: flex; flex-direction: column; overflow: hidden;
+}
+.score-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 18px; font-weight: 600;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.score-scroll {
+  flex: 1; overflow-x: auto; overflow-y: hidden;
+  position: relative; padding: 20px;
+  display: flex; align-items: center;
+}
+.score {
+  background: var(--parchment);
+  border-radius: 8px;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.35), inset 0 0 40px rgba(184,166,125,0.15);
+  min-height: 130px;
+}
+/* 让 VexFlow 生成的 svg 内音符线条呈墨色 */
+.score svg path, .score svg rect { }
+
+/* 羽毛笔光标 */
+.quill {
+  position: absolute; top: 20px; left: 20px;
+  width: 54px; height: 54px; pointer-events: none;
+  opacity: 0; transform-origin: bottom left;
+  transition: transform .18s cubic-bezier(.34,1.56,.64,1), opacity .2s ease;
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4));
+  z-index: 5;
+}
+.quill.quill-dip { animation: dip .18s ease; }
+@keyframes dip {
+  0% { transform: translate(var(--tx), var(--ty)); }
+  50% { }
+  100% { }
+}
+
+/* ============ 启动遮罩 ============ */
+.start-overlay {
+  position: fixed; inset: 0; z-index: 50;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(12,8,20,0.82); backdrop-filter: blur(8px);
+  transition: opacity .4s ease;
+}
+.start-overlay.hidden { opacity: 0; pointer-events: none; }
+.start-card {
+  text-align: center; padding: 48px 56px;
+  background: linear-gradient(180deg, var(--bg-2), #1c1530);
+  border: 1px solid rgba(255,255,255,0.08); border-radius: 24px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+.start-emoji { font-size: 72px; margin-bottom: 8px; }
+.start-card h1 { margin: 8px 0 12px; font-size: 30px; }
+.start-card p { color: var(--ink-dim); line-height: 1.7; margin: 8px 0 24px; }
+.start-note { font-size: 12px; opacity: 0.7; margin-top: 20px; }
+
+/* 滚动条 */
+::-webkit-scrollbar { height: 8px; width: 8px; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
+::-webkit-scrollbar-track { background: transparent; }

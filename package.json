@@ -1,0 +1,27 @@
+{
+  "name": "keyboard-instrument",
+  "version": "0.1.0",
+  "description": "Type on your keyboard and hear a digital instrument — with live 五线谱 notation and a desktop pet.",
+  "main": "src/main/main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev"
+  },
+  "keywords": [
+    "electron",
+    "music",
+    "piano",
+    "keyboard",
+    "vexflow",
+    "tone.js",
+    "desktop-pet"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^31.0.0"
+  },
+  "dependencies": {
+    "uiohook-napi": "^1.5.4"
+  }
+}

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;" />
+  <title>Pet</title>
+  <link rel="stylesheet" href="pet.css" />
+</head>
+<body>
+  <div class="pet-root" id="petRoot">
+    <!-- 冒出的小音符 -->
+    <div class="pet-notes" id="petNotes"></div>
+    <!-- 桌宠本体 -->
+    <div class="pet-body" id="petBody" title="点我回到主窗口">
+      <div class="pet-shadow"></div>
+      <div class="pet-art" id="petArt">🎹</div>
+      <div class="pet-zzz" id="petZzz">z z…</div>
+    </div>
+    <!-- 返回提示 -->
+    <div class="pet-tip" id="petTip">点我展开</div>
+  </div>
+
+  <script src="../vendor/Tone.js"></script>
+  <script src="../renderer/music.js"></script>
+  <script src="../renderer/engine.js"></script>
+  <script src="pet.js"></script>
+</body>
+</html>
