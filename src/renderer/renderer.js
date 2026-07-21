@@ -7,6 +7,10 @@
   const M = window.KBI_MUSIC;
   const ENGINE = window.KBI_ENGINE;
   const SCORE = window.KBI_SCORE;
+  const REC = window.KBI_RECORDER;
+  const COMPOSER = window.KBI_COMPOSER;
+  const MATCHER = window.KBI_MATCHER;
+  const POSTER = window.KBI_POSTER;
 
   // DOM
   const instrumentBar = document.getElementById('instrumentBar');
@@ -22,9 +26,20 @@
   const clearScoreBtn = document.getElementById('clearScore');
   const volumeSlider = document.getElementById('volume');
   const hookStatusEl = document.getElementById('hookStatus');
+  // 录制 & 结果相关
+  const recordBtn = document.getElementById('recordBtn');
+  const recLabel = document.getElementById('recLabel');
+  const recBanner = document.getElementById('recBanner');
+  const recCount = document.getElementById('recCount');
+  const resultModal = document.getElementById('resultModal');
+  const closeResult = document.getElementById('closeResult');
 
   let selectedInstrument = M.DEFAULT_INSTRUMENT;
   let audioReady = false;
+  let lastSong = null;         // 最近生成的曲子
+  let lastMatch = null;        // 最近的匹配结果
+  let lastReason = '';
+  let lastPosterCanvas = null;
 
   // ------------------------------------------------------------------
   // 构建乐器选择条
@@ -67,6 +82,11 @@
     SCORE.addNote(note);
     spawnNoteBurst(note);
     bounceInstrument();
+    // 录制中则捕获
+    if (REC.isRecording()) {
+      REC.capture(note);
+      recCount.textContent = REC.currentCount();
+    }
   }
 
   // 乐器展示区弹跳
@@ -138,6 +158,143 @@
     hookStatusEl.querySelector('.hook-label').textContent = label;
   }
 
+  // ==================================================================
+  // 录制 → 作曲 → 匹配作曲家 → 结果弹窗
+  // ==================================================================
+  function toggleRecord() {
+    if (!audioReady) return;
+    if (REC.isRecording()) {
+      stopRecordingAndAnalyze();
+    } else {
+      startRecording();
+    }
+  }
+
+  function startRecording() {
+    REC.start();
+    recCount.textContent = '0';
+    recordBtn.classList.add('recording');
+    recLabel.textContent = '停止';
+    recBanner.classList.add('show');
+  }
+
+  function stopRecordingAndAnalyze() {
+    const raw = REC.stop();
+    recordBtn.classList.remove('recording');
+    recLabel.textContent = '录制';
+    recBanner.classList.remove('show');
+
+    if (raw.count < 3) {
+      alert('至少敲 3 个音才能生成曲子哦 ♪（当前 ' + raw.count + ' 个）');
+      return;
+    }
+
+    // 作曲(量化 + 音阶吸附) + 匹配
+    lastSong = COMPOSER.compose(raw.events, { scale: COMPOSER.DEFAULT_SCALE });
+    lastMatch = MATCHER.match(lastSong);
+    lastReason = MATCHER.explain(lastMatch.features, lastMatch.best.composer);
+    lastPosterCanvas = null;
+
+    showResult();
+  }
+
+  function showResult() {
+    const best = lastMatch.best;
+    const c = best.composer;
+    document.getElementById('composerEmoji').textContent = c.emoji || '🎼';
+    document.getElementById('composerName').textContent = c.name;
+    document.getElementById('composerMeta').textContent = `${c.en} · ${c.era}`;
+    document.getElementById('similarity').textContent = best.similarity + '%';
+    document.getElementById('composerTag').textContent = c.tag;
+    document.getElementById('matchReason').textContent = '“ ' + lastReason + ' ”';
+    document.getElementById('songMeta').textContent =
+      `${lastSong.bpm} BPM · ${lastSong.scaleName} · ${lastSong.notes.length} 个音 · ${lastSong.totalSec.toFixed(1)}s`;
+
+    renderMiniMelody();
+    renderRunnerUps();
+
+    // 重置海报区
+    document.getElementById('posterPreview').innerHTML = '';
+    document.getElementById('downloadPosterBtn').style.display = 'none';
+
+    resultModal.classList.add('show');
+  }
+
+  function renderMiniMelody() {
+    const box = document.getElementById('miniMelody');
+    box.innerHTML = '';
+    const notes = lastSong.notes;
+    if (!notes.length) return;
+    const midis = notes.map((n) => n.midi);
+    const lo = Math.min(...midis), hi = Math.max(...midis);
+    const span = Math.max(1, hi - lo);
+    notes.slice(0, 60).forEach((n) => {
+      const bar = document.createElement('div');
+      bar.className = 'mm-bar';
+      const t = (n.midi - lo) / span;
+      bar.style.height = (10 + t * 90) + '%';
+      bar.style.opacity = 0.5 + t * 0.5;
+      box.appendChild(bar);
+    });
+  }
+
+  function renderRunnerUps() {
+    const list = document.getElementById('runnerList');
+    list.innerHTML = '';
+    lastMatch.ranking.slice(1, 4).forEach((r) => {
+      const el = document.createElement('div');
+      el.className = 'runner-chip';
+      el.innerHTML = `<span>${r.composer.emoji}</span><span>${r.composer.name}</span><b>${r.similarity}%</b>`;
+      list.appendChild(el);
+    });
+  }
+
+  function playGeneratedSong() {
+    if (!lastSong) return;
+    const btn = document.getElementById('playSongBtn');
+    btn.textContent = '♫ 播放中…';
+    btn.disabled = true;
+    ENGINE.setInstrument(selectedInstrument);
+    const bars = document.querySelectorAll('#miniMelody .mm-bar');
+    let idx = 0;
+    ENGINE.playSong(lastSong, {
+      onNote: () => {
+        const b = bars[idx++];
+        if (b) {
+          b.classList.add('playing');
+          setTimeout(() => b.classList.remove('playing'), 180);
+        }
+      },
+      onEnd: () => {
+        btn.textContent = '▶ 播放我的曲子';
+        btn.disabled = false;
+      },
+    });
+  }
+
+  function generatePoster() {
+    if (!lastMatch || !lastSong) return;
+    lastPosterCanvas = POSTER.generate({
+      matchResult: lastMatch,
+      song: lastSong,
+      instrumentName: M.INSTRUMENTS[selectedInstrument].name,
+      reason: lastReason,
+    });
+    const preview = document.getElementById('posterPreview');
+    preview.innerHTML = '';
+    lastPosterCanvas.classList.add('poster-canvas');
+    preview.appendChild(lastPosterCanvas);
+    document.getElementById('downloadPosterBtn').style.display = '';
+  }
+
+  function closeResultModal() {
+    resultModal.classList.remove('show');
+    ENGINE.stopSong();
+    const btn = document.getElementById('playSongBtn');
+    btn.textContent = '▶ 播放我的曲子';
+    btn.disabled = false;
+  }
+
   // ------------------------------------------------------------------
   // 绑定事件
   // ------------------------------------------------------------------
@@ -149,6 +306,18 @@
     });
 
     clearScoreBtn.addEventListener('click', () => SCORE.clear());
+
+    // 录制 & 结果
+    recordBtn.addEventListener('click', toggleRecord);
+    closeResult.addEventListener('click', closeResultModal);
+    resultModal.addEventListener('click', (e) => {
+      if (e.target === resultModal) closeResultModal();
+    });
+    document.getElementById('playSongBtn').addEventListener('click', playGeneratedSong);
+    document.getElementById('genPosterBtn').addEventListener('click', generatePoster);
+    document.getElementById('downloadPosterBtn').addEventListener('click', () => {
+      if (lastPosterCanvas) POSTER.download(lastPosterCanvas);
+    });
 
     volumeSlider.addEventListener('input', (e) => {
       ENGINE.setVolume(parseFloat(e.target.value));

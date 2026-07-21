@@ -18,6 +18,9 @@
       <div id="hookStatus" class="hook-status" title="全局键盘监听状态">
         <span class="dot"></span><span class="hook-label">检测中…</span>
       </div>
+      <button id="recordBtn" class="btn btn-record" title="开始录制你的演奏">
+        <span class="rec-dot"></span><span id="recLabel">录制</span>
+      </button>
       <label class="vol">
         <span>音量</span>
         <input id="volume" type="range" min="-40" max="0" value="-6" />
@@ -60,6 +63,56 @@
     </section>
   </main>
 
+  <!-- ============ 录制状态浮条 ============ -->
+  <div id="recBanner" class="rec-banner">
+    <span class="rec-dot rec-dot-lg"></span>
+    正在录制 · 已捕获 <b id="recCount">0</b> 个音 · 再次点击「停止」生成曲子
+  </div>
+
+  <!-- ============ 结果弹窗: 作曲家匹配 + 曲子回放 + 海报 ============ -->
+  <div id="resultModal" class="modal">
+    <div class="modal-card">
+      <button id="closeResult" class="modal-close">×</button>
+
+      <div class="result-head">
+        <div id="composerEmoji" class="composer-emoji">🎼</div>
+        <div class="result-head-text">
+          <div class="result-sub">你的曲风最接近</div>
+          <div id="composerName" class="composer-name">—</div>
+          <div id="composerMeta" class="composer-meta">—</div>
+        </div>
+        <div id="similarity" class="similarity">--%</div>
+      </div>
+
+      <div id="composerTag" class="composer-tag">—</div>
+      <div id="matchReason" class="match-reason">—</div>
+
+      <!-- 曲子信息 + 回放 -->
+      <div class="song-box">
+        <div class="song-info">
+          <span id="songMeta">—</span>
+        </div>
+        <button id="playSongBtn" class="btn btn-primary btn-sm">▶ 播放我的曲子</button>
+      </div>
+
+      <!-- 迷你旋律条 -->
+      <div id="miniMelody" class="mini-melody"></div>
+
+      <!-- 其他候选 -->
+      <div class="runner-ups">
+        <div class="runner-title">其他相近的大师</div>
+        <div id="runnerList" class="runner-list"></div>
+      </div>
+
+      <!-- 海报操作 -->
+      <div class="poster-actions">
+        <button id="genPosterBtn" class="btn btn-ghost btn-sm">🖼 生成分享海报</button>
+        <button id="downloadPosterBtn" class="btn btn-primary btn-sm" style="display:none">⬇ 下载海报</button>
+      </div>
+      <div id="posterPreview" class="poster-preview"></div>
+    </div>
+  </div>
+
   <!-- ============ 启动遮罩(需用户手势解锁音频) ============ -->
   <div id="startOverlay" class="start-overlay">
     <div class="start-card">
@@ -77,6 +130,11 @@
   <script src="music.js"></script>
   <script src="engine.js"></script>
   <script src="score.js"></script>
+  <script src="recorder.js"></script>
+  <script src="composer.js"></script>
+  <script src="composers.js"></script>
+  <script src="matcher.js"></script>
+  <script src="poster.js"></script>
   <script src="renderer.js"></script>
 </body>
 </html>

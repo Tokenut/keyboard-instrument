@@ -52,10 +52,43 @@
     if (masterVolume) masterVolume.volume.value = db;
   }
 
+  // ------------------------------------------------------------------
+  // 回放一首曲子 (composer.compose() 的输出)
+  // 用 setTimeout 精确调度, 简单可靠; 返回一个 stop 函数
+  // ------------------------------------------------------------------
+  let playTimers = [];
+  function stopSong() {
+    playTimers.forEach((t) => clearTimeout(t));
+    playTimers = [];
+  }
+
+  function playSong(song, opts = {}) {
+    if (!global.Tone || !synth) return () => {};
+    stopSong();
+    const notes = song.notes || [];
+    notes.forEach((n) => {
+      const timer = setTimeout(() => {
+        try {
+          synth.triggerAttackRelease(n.note, Math.max(0.12, n.durSec), undefined, 0.9);
+        } catch (_) { /* noop */ }
+        if (opts.onNote) opts.onNote(n);
+      }, n.startSec * 1000);
+      playTimers.push(timer);
+    });
+    // 结束回调
+    if (opts.onEnd) {
+      const endT = setTimeout(opts.onEnd, (song.totalSec + 0.3) * 1000);
+      playTimers.push(endT);
+    }
+    return stopSong;
+  }
+
   global.KBI_ENGINE = {
     ensureStarted,
     setInstrument,
     playNote,
+    playSong,
+    stopSong,
     setVolume,
     get currentInstrumentId() { return currentInstrumentId; },
     get started() { return started; },

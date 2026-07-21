@@ -218,3 +218,114 @@ html, body {
 ::-webkit-scrollbar { height: 8px; width: 8px; }
 ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
+
+/* ==========================================================================
+   录制按钮 + 状态浮条
+   ========================================================================== */
+.btn-record {
+  display: flex; align-items: center; gap: 7px;
+  background: rgba(255,107,107,0.12); color: #ffb4b4;
+  border: 1px solid rgba(255,107,107,0.35);
+}
+.btn-record:hover { background: rgba(255,107,107,0.2); }
+.btn-record.recording {
+  background: var(--danger); color: #fff; border-color: var(--danger);
+  box-shadow: 0 0 16px rgba(255,107,107,0.5);
+}
+.rec-dot {
+  width: 9px; height: 9px; border-radius: 50%;
+  background: var(--danger);
+}
+.btn-record.recording .rec-dot { background: #fff; animation: recPulse 1s infinite; }
+.rec-dot-lg { width: 11px; height: 11px; display: inline-block; }
+@keyframes recPulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+.rec-banner {
+  position: fixed; top: 68px; left: 50%; transform: translateX(-50%) translateY(-16px);
+  background: rgba(255,107,107,0.15); border: 1px solid rgba(255,107,107,0.4);
+  color: #ffd0d0; padding: 8px 18px; border-radius: 20px; font-size: 13px;
+  display: flex; align-items: center; gap: 8px;
+  opacity: 0; pointer-events: none; transition: all .3s ease; z-index: 40;
+  backdrop-filter: blur(8px);
+}
+.rec-banner.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.rec-banner b { color: #fff; }
+
+/* ==========================================================================
+   结果弹窗
+   ========================================================================== */
+.modal {
+  position: fixed; inset: 0; z-index: 60;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(10,6,18,0.78); backdrop-filter: blur(10px);
+  opacity: 0; pointer-events: none; transition: opacity .3s ease;
+  padding: 24px;
+}
+.modal.show { opacity: 1; pointer-events: auto; }
+.modal-card {
+  position: relative; width: 560px; max-width: 100%; max-height: 90vh; overflow-y: auto;
+  background: linear-gradient(180deg, var(--bg-2), #17112a);
+  border: 1px solid rgba(255,255,255,0.1); border-radius: 24px;
+  padding: 28px; box-shadow: 0 24px 70px rgba(0,0,0,0.6);
+  transform: scale(0.94); transition: transform .3s cubic-bezier(.34,1.56,.64,1);
+}
+.modal.show .modal-card { transform: scale(1); }
+.modal-close {
+  position: absolute; top: 16px; right: 18px;
+  background: none; border: none; color: var(--ink-dim);
+  font-size: 26px; cursor: pointer; line-height: 1;
+}
+.modal-close:hover { color: var(--ink); }
+
+.result-head { display: flex; align-items: center; gap: 16px; margin-bottom: 6px; }
+.composer-emoji { font-size: 60px; }
+.result-head-text { flex: 1; }
+.result-sub { color: var(--ink-dim); font-size: 13px; }
+.composer-name { font-size: 32px; font-weight: 700; color: var(--accent); }
+.composer-meta { color: var(--ink-dim); font-size: 13px; }
+.similarity {
+  font-size: 28px; font-weight: 800; color: var(--accent);
+  text-shadow: 0 0 16px rgba(232,184,75,0.4);
+}
+
+.composer-tag {
+  margin: 12px 0 4px; font-size: 15px; color: var(--ink);
+  background: rgba(255,255,255,0.05); padding: 8px 14px; border-radius: 12px;
+  display: inline-block;
+}
+.match-reason { color: var(--accent-2); font-size: 14px; margin: 10px 0 18px; font-style: italic; }
+
+.song-box {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  background: rgba(255,255,255,0.04); border-radius: 14px; padding: 14px 16px;
+}
+.song-info { font-size: 13px; color: var(--ink-dim); }
+.btn-sm { padding: 8px 16px; font-size: 13px; }
+
+.mini-melody {
+  display: flex; align-items: flex-end; gap: 2px; height: 60px;
+  margin: 16px 0; padding: 8px; background: var(--parchment);
+  border-radius: 10px; overflow: hidden;
+}
+.mm-bar {
+  flex: 1; min-width: 2px; background: var(--accent-2);
+  border-radius: 2px 2px 0 0; transition: transform .1s ease, background .1s ease;
+}
+.mm-bar.playing { background: var(--accent); transform: scaleY(1.15); }
+
+.runner-ups { margin: 18px 0; }
+.runner-title { font-size: 12px; color: var(--ink-dim); margin-bottom: 8px; }
+.runner-list { display: flex; gap: 8px; flex-wrap: wrap; }
+.runner-chip {
+  display: flex; align-items: center; gap: 6px;
+  background: rgba(255,255,255,0.05); border-radius: 10px;
+  padding: 6px 12px; font-size: 13px;
+}
+.runner-chip b { color: var(--accent); }
+
+.poster-actions { display: flex; gap: 10px; margin-top: 12px; }
+.poster-preview { margin-top: 16px; }
+.poster-canvas {
+  width: 100%; border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
