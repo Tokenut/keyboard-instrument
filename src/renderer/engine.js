@@ -16,6 +16,43 @@
 
   function onLoadingChange(cb) { loadingCb = cb; }
 
+  // ------------------------------------------------------------------
+  // 保活: 阻止 AudioContext 在窗口失焦/隐藏时被 Chromium 挂起
+  //   1. 监听 statechange, 一旦 suspended 立即 resume
+  //   2. 播放一个持续的静音音源, 让浏览器认为音频一直在用
+  //   3. 定时轮询兜底
+  // ------------------------------------------------------------------
+  let keepAliveStarted = false;
+  function startKeepAlive() {
+    if (keepAliveStarted || !global.Tone) return;
+    keepAliveStarted = true;
+    const ctx = global.Tone.getContext().rawContext || global.Tone.context.rawContext;
+    if (!ctx) return;
+
+    const resume = () => {
+      if (ctx.state !== 'running') {
+        ctx.resume().catch(() => {});
+      }
+    };
+
+    // 1. 状态变化即刻恢复
+    ctx.addEventListener && ctx.addEventListener('statechange', resume);
+
+    // 2. 持续静音音源(近乎无声, 但让上下文保持活跃)
+    try {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      gain.gain.value = 0.0001; // 几乎听不见
+      osc.frequency.value = 20; // 极低频
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+    } catch (_) { /* noop */ }
+
+    // 3. 定时兜底
+    setInterval(resume, 500);
+  }
+
   // Tone.js 需要用户手势后才能启动音频上下文
   async function ensureStarted() {
     if (started) return;
@@ -23,6 +60,7 @@
       await global.Tone.start();
     }
     started = true;
+    startKeepAlive();
   }
 
   function ensureMaster() {
